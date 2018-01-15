@@ -1,0 +1,83 @@
+/*
+
+   Copyright (c) 2017 NTT corp. - All Rights Reserved
+
+   This file is part of opcount which is released under Software License
+   Agreement for Evaluation. See file LICENSE.pdf for full license details.
+
+ */
+
+group  Repeat (integer n , group  g ) ;
+target e      (group0  g0, group1 g1) ;
+target product(integer n , target t ) ;
+group  bitexp (integer n , group  g ) ;
+
+/*
+list   COM        (list proof) ;
+list   PI         (list proof) ;
+list   GS_commit  (list crs, group g) ;
+list   GS_commit_g(list crs) ;
+list   option_crs () ;
+list   GS_proofwi (list crs, list predicate) ;
+list   GS_proofzk (list crs, list predicate) ;
+list   GS_verifywi(list crs, list predicate, list proof) ;
+list   GS_verifyzk(list crs, list predicate, list proof) ;
+list   GS_verify2 (list proof) ;
+list   GS_setupB2 (group g) ;
+list   GS_setupH2 (group g) ;
+list   statistics (list x) ;
+list   setweight  (integer n, list group_variables) ;
+list   setpriority(integer n, list group_variables) ;
+list   exclude    (list X, list Y) ;
+
+macro list DLIN_Instance_Generator(group _g) {
+  integer x, y, a, b, r, f ;
+  group _g1 = _g^x ;
+  group _g2 = _g^y ;
+  group _v1 = _g1^a ;
+  group _v2 = _g2^b ;
+  group _v3 = _g^(a+b+f*r) ;
+  return (_g,_g1,_g2,_v1,_v2,_v3) ;
+}
+
+macro Reduction_to_DLIN(group _g, group _g1, group _g2, group _v1, group _v2, group _v3){
+  group g,u,v,w1,w2,w3  ;
+  (g,u,v,w1,w2,w3) = (_g,_g1,_g2,_v1,_v2,_v3) ;
+  return (g,u,v,w1,w2,w3) ;
+}
+
+macro Extraction_from_Commitment(list com, list exk){
+  group c1,c2,c3 ; (c1,c2,c3) = com ;
+  integer alpha, beta ; (alpha, beta) = exk ;
+  group X = c3 * c1^(-1/alpha) * c2^(-1/beta) ;
+  return X ;
+}
+
+macro list GS_setupB (group g){
+  integer alpha, beta, r, s ;
+  group   u     = g^alpha ;
+  group   v     = g^beta ;
+  group   w1    = u^r ;
+  group   w2    = v^s ;
+  group   w3    = g^(r+s) ;
+  list    opt   = option_crs() ;
+  list    crs   = (opt,g,u,v,w1,w2,w3) ;
+  GS_commit_g(crs) ;
+  list    exk   = (alpha, beta) ;
+  return (crs, exk) ;
+}
+
+macro list GS_setupH (group g){
+  integer alpha, beta, r, s ;
+  group   u     = g^alpha ;
+  group   v     = g^beta ;
+  group   w1    = u^r ;
+  group   w2    = v^s ;
+  group   w3    = g^(r+s-1) ;
+  list    opt   = option_crs() ;
+  list    crs   = (opt,g,u,v,w1,w2,w3) ;
+  GS_commit_g(crs) ;
+  list    eqk   = (r, s) ;
+  return (crs, eqk) ;
+}
+*/

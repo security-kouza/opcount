@@ -1,0 +1,36 @@
+##
+## Copyright (c) 2017 NTT corp. - All Rights Reserved
+##
+##  This file is part of Opcount project which is released under Software
+##  License Agreement for Evaluation. See file LICENSE.pdf for full license
+##  details.
+##
+
+Testing accuracy of estimation for TightSPS over KH17 pDB.
+Error_rate = (benchmark - estimation) / (benchmark)
+(Negative value means the real data is faster.)
+
+Curve = BLS24
+error in KeyGen = 0.22505%(real=944.08*Mclk, est=941.96*Mclk)
+error in Sign = 0.16127%(real=903.36*Mclk, est=901.90*Mclk)
+error in Verify = 0.17933%(real=3934.3*Mclk, est=3927.2*Mclk)
+
+Curve = KSS32
+error in KeyGen = 0.33472%(real=1098.5*Mclk, est=1094.8*Mclk)
+error in Sign = -0.31886%(real=1005.3*Mclk, est=1008.5*Mclk)
+error in Verify = 0.077168%(real=4152.3*Mclk, est=4149.1*Mclk)
+
+Curve = KSS36
+error in KeyGen = 0.74351%(real=782.98*Mclk, est=777.16*Mclk)
+error in Sign = 0.43460%(real=723.56*Mclk, est=720.42*Mclk)
+error in Verify = 0.66979%(real=3827.8*Mclk, est=3802.2*Mclk)
+
+Curve = BLS42
+error in KeyGen = 4.6011%(real=1005.1*Mclk, est=958.90*Mclk)
+error in Sign = 3.3793%(real=890.43*Mclk, est=860.34*Mclk)
+error in Verify = 0.19279%(real=3356.0*Mclk, est=3349.5*Mclk)
+
+Curve = BLS48
+error in KeyGen = 0.66834%(real=553.83*Mclk, est=550.13*Mclk)
+error in Sign = -0.052895%(real=503.50*Mclk, est=503.76*Mclk)
+error in Verify = 0.12356%(real=2337.5*Mclk, est=2334.6*Mclk)

@@ -1,0 +1,52 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\ KSS18 curve for 192bit security level 
+\\ Rev.0.1 2017/07/23
+\\ Source: ePrint 2017/334 version 20170426:174451"
+\\         "Updating key size estimations for pairings"
+\\          by Razvan Barbulescu and Sylvain Duquesne
+\\ Base field size = 676 bits
+\\ Estimated Security Level = 204.09 bits
+\\ Group order = 501.577 bits
+\\ u = -2^85-2^31-2^26+2^6
+\\ Status = [x]Theoretical Estimation, []Real Benchmark, []Toy Example
+
+\\ For BD17_xxx.pdb, the unit of timing is 32 x 32bit multiplications.
+Unit = 1;
+
+
+\\ Common Parameters
+Sep                  = 192;
+Order                = 502;  \\ Group order in bits = size of an Zp element
+EmbDeg               = 18;   \\ Embedding degree
+ExtDeg		     = 3;    \\ Extension Degree for Group1
+
+
+\\ Field Arithmetic
+FM                   = 484 * Unit;    \\ Multiplication in F_q = (22 words)^2
+FI                   = 6*FM; 	      \\ Inversion in F_q (heuristic: not from the paper)
+eFM		     = 6*FM;	      \\ Multiplication in F_q^3
+eFS		     = 5*FM;
+eFI		     = 12*FM + FI;    \\ from [AFCK+13]
+TARGET_mul           = 108*FM;
+TARGET_square        = 66*FM;
+TARGET_inv           = 172*FM+FI;
+
+
+\\ High-level Functionalities
+Miller_Loop          = 13003*FM;
+Final_Exponentiation = 24719*FM+8*FI;
+
+
+
+\\ wNAF window size
+\\ Set 0 for searching optimal window size adaptively for every modexp
+GROUP0_wNAF          = 0;
+GROUP1_wNAF          = 0;
+TARGET_wNAF          = 0;
+

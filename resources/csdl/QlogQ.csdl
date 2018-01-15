@@ -1,0 +1,360 @@
+// A CSDL file of JR 17 scheme
+//
+// Copyright (c) 2017 NTT corp. - All Rights Reserved
+//
+//  This file is part of Opcount project which is released under Software
+//  License Agreement for Evaluation. See file LICENSE.pdf for full license
+//  details.
+//
+
+inline "
+
+  for_statement(A_,B_,C_,D_) = {
+    eval(A_);
+    A_=0;
+    while(eval(B_),A_++;eval(C_));
+    return(A_ * D_) ;
+  }
+
+  if_statement(A_,B_,C_) = {
+    return (if_prob * B_ + (1 - if_prob) * C_) ;
+  }
+
+  ni = 10;
+  if_prob = 1/2 ;
+
+" ;
+
+
+// Q log Q presented at PKC2017 
+// M in G0
+
+// global parameters
+integer Sep;   // security parameter specified in PerfDB
+integer Ord;   // group order (=q)
+
+group0 G;     // default generator for the left group
+group1 Gh;     // default generator for the right group
+target Gt;     // default generator for the target group Gt = e(G, Gh);
+
+integer rnd(){
+}
+
+group0 rnd_g(){
+  integer r;
+  return G^r;
+}
+
+group1 rnd_gh(){
+  integer r;
+  return Gh^r;
+}
+
+// dummy functions for x^(-1)
+group0 inv0(group0 x){
+  return x;
+}
+
+group1 inv1(group1 x){
+  return x;
+}
+
+
+
+//
+//// QANIZK proof functions
+//
+
+// pargen
+list QANIZK_pargen(){
+	group0 g;
+	group1 gh;
+	g=rnd_g();
+	gh=rnd_gh();
+	
+	return (g, gh);
+}
+
+
+// crsgen_v
+list QANIZK_crsgen_v(group0 g, group1 gh){
+	integer i, qki, qk0;
+
+	for(i=0; i<10; i++){
+		qki = rnd();
+	}
+	qk0=rnd();
+
+	integer qa1, qa2;
+	qa1 = rnd();
+	qa2 = rnd();
+
+	group1 QCh0i, QCh1, QAh;
+
+	for(i=0; i<10; i++){
+		QCh0i = gh^(qki*qa1);
+	}
+	QCh1 = gh^(qk0*qa1);
+
+	QAh=gh^(qa1);
+
+	list CRS_v, st;
+	CRS_v=(g, gh, QCh0i, QCh1, QAh);
+	st=(qki, qk0);
+
+	return (CRS_v, st);
+}
+
+
+// crsgen_p
+list QANIZK_crsgen_p(group0 g, group1 gh, group0 Mij, group0 qai, list st, list CRS_v){
+	integer i, j, qki, qk0;
+	group0 QP0j, QP1;
+	group1 QCh0i, QCh1, QAh;
+
+	(g, gh, QCh0i, QCh1, QAh)=CRS_v;
+	(qki, qk0)=st;
+
+	for(j=0; j<10; j++){
+		for(i=0; i<10; i++){
+		QP0j = QP0j * (Mij^(qki));
+		}
+	}
+	for(i=0; i<10; i++){
+		QP1 = QP1 * (qai^(qki));
+		}
+	QP1=QP1*(g^(qk0));
+	
+	list CRS_p;
+	CRS_p=(QP0j, QP1);	
+
+	return CRS_p;
+}
+
+// prover
+list QANIZK_prove(group0 Yi, integer xj, list CRS_p){
+	group0 pi, QP0j, QP1;
+	
+	(QP0j, QP1)=CRS_p;
+	
+	pi=1;
+	for(j=0; j<10; j++){
+		pi=pi* (QP0j^(xj));
+	}
+
+	pi=pi * QP1;
+
+	return pi;
+}
+
+// ver
+integer QANIZK_verify(group0 Yi, group0 pi, list CRS_v){
+	group0 g;
+	group1 gh, QCh0i, QCh1, QAh;
+	target ev;
+	integer retv;
+
+	(g, gh, QCh0i, QCh1, QAh)=CRS_v;
+
+// In fact, the number of loop is 
+// (|message|, rho, brho, psi, gam)
+
+   ev = product(14, e(Yi, QCh0i)) * e(g, QCh1) * e(pi^(-1), QAh);
+
+   if(ev == 1, 	retv = 1, retv = 0 );
+   return retv;
+}
+
+//
+// Simulation
+//
+// crssim_v
+list QANIZK_crssim_v(group0 g, group1 gh){
+	integer i, qki, qk0;
+
+// In fact, the number of loop is 
+// (|message|, rho, brho, psi, gam)
+	for(i=0; i<14; i++){
+		qki = rnd();
+	}
+	qk0=rnd();
+
+	integer qa1, qa2;
+	qa1 = rnd();
+	qa2 = rnd();
+
+	group1 QCh0i, QCh1, QAh;
+	group0 QK0;
+
+	QK0=g^(qk0);
+
+// In fact, the number of loop is 
+// (|message|, rho, brho, psi, gam)
+	for(i=0; i<14; i++){
+		QCh0i = gh^(qki*qa1);
+	}
+	QCh1 = QK0^(qa1);
+	QAh=gh^(qa1);
+
+	list CRS_v, st, trap;
+
+	CRS_v=(g, gh, QCh0i, QCh1, QAh);
+	st=(qki, qk0);
+
+	trap=(qki, QK0);
+
+	return (CRS_v, st, trap);
+}
+
+
+list QANIZK_sim(group0 g, group1 gh, group0 Yi, list trap){
+	integer qki;
+	group0 pi, QK0;
+
+	(qki, QK0)=trap;
+	
+
+// In fact, the number of loop is 
+// (|message|, rho, brho, psi, gam)
+	for(i=0; i<14; i++){
+		pi=pi * (Yi^(qki));
+	}
+	pi=pi * QK0;
+
+	return pi;
+}
+
+
+
+////////////////////////////////////////////////
+// Scheme 
+
+QlogQ_gen(){
+	group0 g;
+	group1 gh;
+	
+	g=rnd_g();
+	gh=rnd_gh();
+	
+	integer b, k0, d, e;
+	b=rnd();
+	k0=rnd();
+	d=rnd();
+	e=rnd();
+
+	integer i, ki;
+	for(i=0; i<10; i++){
+		ki=rnd();
+		}
+	
+	group0 etai, rho, brho, pshi, gam;
+	integer mi, r, rd;
+		
+		r=rnd();
+		rd=rnd();	
+		
+	for(i=0; i<10; i++){
+		mi=rnd();
+		}
+	for(i=0; i<10; i++){
+		etai=g^(mi);		
+		}
+	rho=g^r;
+	brho=g^(b*r);
+	pshi=g^(rd);
+	
+	integer kim;
+	for(i=0; i<10; i++){
+		kim= kim + (ki*mi);		
+		}
+
+	gam=g^(k0 + kim + (d*r) + (e*rd));
+	
+	list CRS_v, st, trap;
+
+	(CRS_v, st, trap)=QANIZK_crssim_v(g, gh);
+	
+	list pk, sk;
+	
+	pk=CRS_v;
+	sk=(b, k0, ki, d, e, trap);
+	
+	return (pk, sk);
+}
+
+
+QlogQ_sign(list pk, list sk, group0 mui){
+	integer b, k0, ki, d, e;
+	list trap, CRS_v;
+	(b, k0, ki, d, e, trap)=sk;
+	CRS_v=pk;
+
+	group0 g;
+	group1 gh, QCh0i, QCh1, QAh;
+	(g, gh, QCh0i, QCh1, QAh)=CRS_v;
+
+	integer qki;
+	group0 QK0;
+	(qki, QK0)=trap;
+	
+	integer r, TAG;
+	r=rnd();
+	TAG=rnd();
+	
+	group0 rho, brho, psi, gam;
+	rho=g^r;
+	brho=g^(b*r);
+	psi=g^(TAG*r);
+	
+//	group0 Ki;
+//	for(i=0; i<10; i++){
+//		Ki=g^(ki);	
+//	}	
+	
+	group0 Kmu;
+	for(i=0; i<10; i++){
+		Kmu= Kmu * (mui^(ki));		
+		}
+	gam=Kmu * (g^(k0 + (d*r) + TAG * (e*r)));
+	
+	group0 pi;
+	group1 tau;
+	
+	// In fact, the candidates of witnesses
+	// are (mui, rho, brho, psi, gam)
+	// The number of loop is set |message|+4 = 14
+	pi=QANIZK_sim(g, gh, mui, trap);
+	
+	list sigma;
+	sigma=(rho, brho, psi, gam, tau, pi);
+	
+	return sigma;
+	
+}
+
+integer QlogQ_verify(list pk, group0 mui, list sigma){
+	group0 rho, brho, psi, gam, pi;
+	group1 tau;
+	list CRS_v;
+	integer retv, a;
+	target ev;
+	
+	(rho, brho, psi, gam, tau, pi)=sigma;
+	CRS_v=pk;
+	
+	group1 gh, QCh0i, QCh1, QAh;
+	group0 g;
+	(g, gh, QCh0i, QCh1, QAh)=CRS_v;
+	
+	a=QANIZK_verify(mui, pi, CRS_v);
+	ev = e(rho, tau)*e(psi^(-1), gh);
+	
+	if(
+	    a==1 && ev == 1,
+	    retv = 1,
+	    retv = 0
+	);
+	return retv;
+}
+
+

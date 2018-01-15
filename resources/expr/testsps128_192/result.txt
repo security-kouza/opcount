@@ -1,0 +1,125 @@
+## Results of estimating performance of some SPS schemes over DB17 timing data.
+##
+## Copyright (c) 2017 NTT corp. - All Rights Reserved
+##
+##  This file is part of Opcount project which is released under Software
+##  License Agreement for Evaluation. See file LICENSE.pdf for full license
+##  details.
+##
+
+Estimating performance of some SPSes over DB17
+with batch_quality=128 for all.
+
+TightSPS (naiive) at 128bit level
+
+Evaluating  on BN_128.
+tSPSGen     = 33.65655750
+tSPSSign    = 27.02664000
+tSPSVerify = 207.3748500
+
+Evaluating  on BLS12_128.
+tSPSGen     = 23.27053500
+tSPSSign    = 18.81972000
+tSPSVerify = 141.7986000
+
+Evaluating  on KSS16_128.
+tSPSGen     = 18.10129750
+tSPSSign    = 14.84452200
+tSPSVerify = 97.11145400
+
+Evaluating  on KSS18_128.
+tSPSGen     = 15.51986333
+tSPSSign    = 12.57553000
+tSPSVerify = 111.9106010
+
+TightSPS (batch in G0) at 128bit level
+
+Evaluating  on BN_128.
+tSPSGen     = 33.65655750
+tSPSSign    = 27.02664000
+tSPSVerify = 103.7243250
+
+Evaluating  on BLS12_128.
+tSPSGen     = 23.27053500
+tSPSSign    = 18.81972000
+tSPSVerify = 70.51117500
+
+Evaluating  on KSS16_128.
+tSPSGen     = 18.10129750
+tSPSSign    = 14.84452200
+tSPSVerify = 38.78969600
+
+Evaluating  on KSS18_128.
+tSPSGen     = 15.51986333
+tSPSSign    = 12.57553000
+tSPSVerify = 46.61972700
+
+TightSPS (full batch) at 128bit level
+
+Evaluating  on BN_128.
+tSPSGen     = 33.65655750
+tSPSSign    = 27.02664000
+tSPSVerify = 82.40377500
+
+Evaluating  on BLS12_128.
+tSPSGen     = 23.27053500
+tSPSSign    = 18.81972000
+tSPSVerify = 57.03862500
+
+Evaluating  on KSS16_128.
+tSPSGen     = 18.10129750
+tSPSSign    = 14.84452200
+tSPSVerify = 35.69197500
+
+Evaluating  on KSS18_128.
+tSPSGen     = 15.51986333
+tSPSSign    = 12.57553000
+tSPSVerify = 40.30389000
+
+KPW15 (naiive) at 192bit level
+
+Evaluating  on BLS24_192.
+KPW15_gen     = 55.00826640
+KPW15_sign    = 30.64746780
+KPW15_verify  = 128.2936320
+
+Evaluating  on KSS18_192.
+KPW15_gen     = 79.09044000
+KPW15_sign    = 50.20177067
+KPW15_verify  = 150.7931040
+
+KPW15 (full batch) at 192bit level
+
+Evaluating  on BLS24_192.
+KPW15_gen     = 55.00826640
+KPW15_sign    = 30.64746780
+KPW15_verify  = 121.1704920
+
+Evaluating  on KSS18_192.
+KPW15_gen     = 79.09044000
+KPW15_sign    = 50.20177067
+KPW15_verify  = 140.3585480
+
+JR17 (naiive) at 192bit level
+
+Evaluating  on BLS24_192.
+QlogQ_gen     = 59.61493080
+QlogQ_sign    = 27.92232000
+QlogQ_verify  = 117.0845280
+
+Evaluating  on KSS18_192.
+QlogQ_gen     = 88.11155467
+QlogQ_sign    = 46.37978400
+QlogQ_verify  = 138.0929440
+
+JR17 (full batch) at 192bit level
+
+Evaluating  on BLS24_192.
+QlogQ_gen     = 59.61493080
+QlogQ_sign    = 27.92232000
+QlogQ_verify  = 109.9613880
+
+Evaluating  on KSS18_192.
+QlogQ_gen     = 88.11155467
+QlogQ_sign    = 46.37978400
+QlogQ_verify  = 127.6583880

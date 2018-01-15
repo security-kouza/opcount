@@ -1,0 +1,251 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\ Rev.1.0 2017/12/18
+\\ Common arithmetics that are not experimentally measured in BD17_xxx.pdb.
+\\ Usage: opcount BD17_common.pdb BD17_xxx.pdb < yyy.csdl | gp -q
+\\
+\\ Updated(1.0) paring_batch to internally count TARGET_mul
+
+\\ Pari/gp setting
+default(realprecision,16) ;
+default(format, "g.10") ;
+
+
+\\ Built-in functions
+call_rnd             = 0 ;
+call_prod(n,x)       = n * x;
+
+
+\\
+\\ GROUP0 arithmetics
+\\
+\\ Field Arithmetics
+FS                   = FM;
+\\
+\\ Group Operations
+GROUP0_mul           = FI + 2*FM + FS; \\ (Affin cordingate)
+\\GROUP0_mul           =  9*FM + 2*FS; \\ (Polar cordinate Z=1)
+\\GROUP0_mul           = 12*FM + 2*FS; \\ (Polar cordinate Z=\=1)
+\\GROUP0_mul           =  8*FM + 3*FS; \\ (Jacobian cordinate Z=1)
+\\GROUP0_mul           = 12*FM + 4*FS; \\ (Jacobian cordinate Z=\=1)
+
+GROUP0_square        = FI + 2*FM + 2*FS; \\ (Affin cordinate)
+\\GROUP0_square           = 7*FM + 3*FS; \\ (Polar cordinate a=-3)
+\\GROUP0_square           = 7*FM + 5*FS; \\ (Polar cordinate a=\=-3)
+\\GROUP0_square           = 4*FM + 4*FS; \\ (Jacobian cordinate a=-3)
+\\GROUP0_square           = 4*FM + 6*FS; \\ (Jacobian cordinate a=\=-3)
+
+\\ Multi-base exponentiation for k-bit exponents by wNAF with whole or block or no table lookup.
+\\ w>0, k>0, n>=0, m>=0
+
+\\ wNAF method
+Bitexp_wNAF(w,k,n,m,time_mul,time_square,time_div) = {
+    local(cost_tbl_sqr, cost_tbl_mul, cost_ave_mul, slop, ttl);
+    if(w>k, w=k);
+    if(w<=2,
+       cost_tbl_sqr = 0;
+       cost_tbl_mul = 0;
+       ,
+       cost_tbl_sqr = 1;
+       cost_tbl_mul = 2^(w-2)-1;
+       );
+    cost_ave_mul = k  / (w+1);  \\ average number of non-zero bits in each k-bit exponent
+    slop = 0.5;  \\ assumption: wNAF causes a sloppy bit with probability 1/2
+    
+    ttl = n * (
+	       cost_tbl_sqr * time_square   \\ table making
+	       + cost_tbl_mul * time_mul      \\ table making
+	       + cost_ave_mul * time_mul)     \\ multiplication for each non-zero bit
+    + min(1,n) * (k + slop) * time_square \\ squaring k+slop bits
+    + m * time_mul;
+    
+    return (ttl);
+};
+
+
+\\ Whole table lookup method for k*n bits
+Bitexp_WholeTable(w,k,n,m,time_mul,time_square,time_div) = {
+    local(mcount);
+    if(w>k, w=k);
+    mcount = 2^(n*w)-n-1 + (ceil(k/w)-1) * 1 * (2^(n*w)-1)/(2^(n*w));
+
+    return( min(1,n) * (mcount * time_mul + (k-1) * time_square) + m * time_mul );
+};
+
+\\ Sliding Window Method 
+Bitexp_SlidingWindow(w,k,n,m,time_mul,time_square,time_div) = {
+    local(mcount);
+    if(w>k, w=k);
+    mcount = (2^w-2)*n  + (ceil(k/w)*n-1) * (2^w-1)/(2^w);
+    return( min(1,n) * (mcount * time_mul + (k-1) * time_square) + m * time_mul );
+};
+
+\\ Binary method
+Bitexp_BinaryMethod(k,n,m,time_mul,time_square,time_div) = {
+    local(mcount);
+    mcount = k * n * (1/2);
+    return( min(1,n) * (mcount * time_mul + (k-1) * time_square) + m * time_mul );
+};
+
+
+\\ search optimal window length:  w <= 5
+optwin_wNAF(k,n,m,time_mul,time_square,time_div) = {
+  local(wstart, wend, mincost, tcost);
+  wstart = 1;
+  wend   = 6;
+  wNAFWindowSize   = wstart;
+  mincost = Bitexp_wNAF(wstart,k,n,m,time_mul,time_square,time_div);
+  for(i=wstart+1,wend,
+      tcost = Bitexp_wNAF(i,k,n,m,time_mul,time_square,time_div);
+      if(mincost > tcost, mincost = tcost; wNAFWindowSize = i;);
+      );
+  return (mincost);
+};
+
+
+optwin_WholeTable(k,n,m,time_mul,time_square,time_div) = {
+  local(wstart, wend, mincost, tcost);
+  wstart = 1;
+  wend   = 6;
+  WholeTableWindowSize   = wstart;
+  mincost = Bitexp_wNAF(wstart,k,n,m,time_mul,time_square,time_div);
+  for(i=wstart+1,wend,
+      tcost = Bitexp_WholeTable(i,k,n,m,time_mul,time_square,time_div);
+      if(mincost > tcost, mincost = tcost; WholeTableWindowSize = i;);
+      );
+  return (mincost);
+};
+
+optwin_SlidingWindow(k,n,m,time_mul,time_square,time_div) = {
+  local(wstart, wend, mincost, tcost);
+  wstart = 1;
+  wend   = 6;
+  SlidingWindowSize   = wstart;
+  mincost = Bitexp_SlidingWindow(wstart,k,n,m,time_mul,time_square,time_div);
+  for(i=wstart+1,wend,
+      tcost = Bitexp_WholeTable(i,k,n,m,time_mul,time_square,time_div);
+      if(mincost > tcost, mincost = tcost; SlidingWindowSize = i;);
+      );
+  return (mincost);
+};
+
+
+Bitexp_opt(k,n,m,time_mul,time_square,time_div) = {
+  local(bx,tx);
+  bx = optwin_wNAF(k,n,m,time_mul,time_square,time_div);
+
+  tx = optwin_WholeTable(k,n,m,time_mul,time_square,time_div);
+  if(tx<bx, bx=tx);
+  
+  tx = optwin_SlidingWindow(k,n,m,time_mul,time_square,time_div);
+  if(tx<bx, bx=tx);
+  
+  tx = Bitexp_BinaryMethod(k,n,m,time_mul,time_square,time_div);
+  if(tx<bx, bx=tx);
+  
+  return(bx);
+};
+	
+\\ Multi-base exponentiation by 2-GLV method for each exponentiation
+GROUP0_bitexp(k,n,m) = {
+  if(GROUP0_wNAF>=1,
+       return (Bitexp_wNAF(GROUP0_wNAF,k,n,m,GROUP0_mul,GROUP0_square,GROUP0_mul));
+       ,
+       return (Bitexp_opt(k,n,m,GROUP0_mul,GROUP0_square,GROUP0_mul));
+  );
+};
+
+GROUP0_GLV2(n,m) = {
+  if(GROUP0_wNAF>=1,
+       return (Bitexp_wNAF(GROUP0_wNAF,(Order/2),2*n,m,GROUP0_mul,GROUP0_square,GROUP0_mul));
+       ,
+       return (Bitexp_opt((Order/2),2*n,m,GROUP0_mul,GROUP0_square,GROUP0_mul));
+  );
+};
+
+GROUP0_batch(n,m) = GROUP0_GLV2(n,m);
+
+\\
+\\ GROUP1 arithmetics
+\\
+\\ Group Operations
+GROUP1_mul           = eFI + 2*eFM + eFS;
+\\GROUP1_mul           =  9*eFM + 2*eFS; \\ (Polar cordinate Z=1)
+\\GROUP1_mul           = 12*eFM + 2*eFS; \\ (Polar cordinate Z=\=1)
+\\GROUP1_mul           =  8*eFM + 3*eFS; \\ (Jacobian cordinate Z=1)
+\\GROUP1_mul           = 12*eFM + 4*eFS; \\ (Jacobian cordinate Z=\=1)
+
+GROUP1_square        = eFI + 2*eFM + 2*eFS;
+\\GROUP1_square           = 7*eFM + 3*eFS; \\ (Polar cordinate a=-3)
+\\GROUP1_square           = 7*eFM + 5*eFS; \\ (Polar cordinate a=\=-3)
+\\GROUP1_square           = 4*eFM + 4*eFS; \\ (Jacobian cordinate a=-3)
+\\GROUP1_square           = 4*eFM + 6*eFS; \\ (Jacobian cordinate a=\=-3)
+
+\\ Multi-base exponentiation for k-bit exponents by the binary method with or without table look-ups
+GLS_deg = eulerphi(EmbDeg);
+
+\\ Computing multi-base exponentiation in group1 with x-GLS method
+GROUP1_bitexp(k,n,m) = {
+  if(GROUP1_wNAF>=1,
+       return (Bitexp_wNAF(GROUP1_wNAF,k,n,m,GROUP1_mul,GROUP1_square,GROUP1_mul));
+       ,
+       return (Bitexp_opt(k,n,m,GROUP1_mul,GROUP1_square,GROUP1_mul));
+  );
+};
+
+GROUP1_GLSX(x,n,m) = {
+  if(GROUP1_wNAF>=1,
+       return (Bitexp_wNAF(GROUP1_wNAF,(Order/x),x*n,m,GROUP1_mul,GROUP1_square,GROUP1_mul));
+       ,
+       return (Bitexp_opt((Order/x),x*n,m,GROUP1_mul,GROUP1_square,GROUP1_mul));
+  );
+};
+
+GROUP1_batch(n,m) = GROUP1_GLSX(GLS_deg,n,m);
+
+
+\\
+\\ Computing multi-base exponentiation in G_t with x-GLS method
+\\
+TARGET_bitexp(k,n,m) = {
+  if(TARGET_wNAF>=1,
+       return (Bitexp_wNAF(TARGET_wNAF,k,n,m,TARGET_mul,TARGET_square,TARGET_mul));
+       ,
+       return (Bitexp_opt(k,n,m,TARGET_mul,TARGET_square,TARGET_mul));
+  );
+};
+
+TARGET_GLSX(x,n,m) = {
+  if(TARGET_wNAF>=1,
+       return (Bitexp_wNAF(TARGET_wNAF,(Order/x),x*n,m,TARGET_mul,TARGET_square,TARGET_mul));
+       ,
+       return (Bitexp_opt((Order/x),x*n,m,TARGET_mul,TARGET_square,TARGET_mul));
+  );
+};
+TARGET_batch(n,m) = TARGET_GLSX(GLS_deg,n,m);
+
+
+\\ Computing product of n pairings
+pairing_batch(n)     = n * Miller_Loop + min(n,1) * Final_Exponentiation + (n-1) * TARGET_mul;
+
+
+\\ MISC operations
+GROUP0_assign        = 0 ;
+GROUP1_assign        = 0 ;
+INTEGER_assign       = 0 ;
+LIST_VARIABLE_assign = 0 ;
+LIST_LITERAL_assign  = 0 ;
+INTEGER_mul          = 0 ;
+TARGET_eq            = 0 ;
+INTEGER_eq	     = 0 ;
+INTEGER_uminus       = 0 ;
+INTEGER_sub          = 0 ;
+INTEGER_add          = 0 ;
+INTEGER_logical_and  = 0 ;
+TARGET_assign	     = 0 ;
+GROUP_assign         = 0 ;

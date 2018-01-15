@@ -1,0 +1,83 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\ Rev.0.0 2017/07/21
+\\ Source:
+\\ @PhDThesis{Verma15,
+\\  author =       {Rajeev Verma},
+\\  title =        {Efficient Implementations of Pairing-Based Cryptography on Embedded Systems},
+\\  year =         {2015},
+\\  school =       "Rochester Institute of Technology",
+\\  address =      "New York, USA",
+\\ }
+\\
+\\ BN curve for 192bit security level
+\\ Benchmark on Arndale Board (ARM v7), Cortex-A15 at 1.7 GHz
+\\ Lower level implementation by NEON language
+\\ Numbers are from Table 6.8 (446-bit, Language=N_S, Schoolbook Multiplication) in page 66.
+\\ Projective Coordinate is assumed
+\\
+\\
+\\ Base field size = 638 bits
+\\ Estimated Security Level = 226 bits?
+\\ Group order = 638 bits
+\\ Accuracy = []Theoretical Estimation, [x]Real Benchmark, []Toy Example
+
+\\ Numbers are in Clock Counts
+
+
+\\ Common Parameters
+Sep            = 256;
+Order          = 638;  \\ Group order in bits = size of an Zp element
+EmbDeg         = 12;   \\ Embedding degree
+ExtDeg	       = 2;    \\ Extension Degree for Group1
+
+
+\\ Field Arithmetic
+FA             = 95;
+FM             = 2774;
+FR             = 1726;
+FI             = 31452;
+FMu            = FM-FR;
+FS             = FM;
+FSu            = FMu;
+eFA            = 192;
+eFM	       = 7640;
+eFS            = 5623;
+eFI	       = 42833;
+eFR            = 2*FR;
+eFMu           = eFM-eFR;
+eFSu	       = eFS-eFR;
+
+\\ Group Operations
+\\GROUP0_mul     = FI + 2*FM + FS;   \\ Affine
+\\GROUP0_square  = FI + 2*FM + 2*FS; \\ Affine
+GROUP0_mul      = 9*FM + 2*FS; \\ (Polar cordinate Z=1)
+GROUP0_square   = 7*FM + 5*FS; \\ (Polar cordinate a=\=-3)
+
+
+\\GROUP1_mul     = eFI + 3*eFM + 1*eFS + 6*eFA + 2*FM;  \\ Affine
+\\GROUP1_square  = eFI + 3*eFM + 2*eFS + 7*eFA + 2*FM;  \\ Affine
+GROUP1_mul     = 11*eFM + 2*eFSu + 10*eFA + 4*FM;  \\ Projective
+GROUP1_square  =  2*eFMu + 7*eFSu + 8*eFR + 25*eFA + 4*FM;  \\ Projective
+
+TARGET_mul     = 18*eFMu + 110*eFA + 6*eFR;
+TARGET_square  = 9*eFSu+46*eFA+6*eFR;
+TARGET_inv     = 25*eFMu + 9*eFSu + 16*eFR + 121*eFA + eFI;
+
+
+\\ High-level Functionalities
+Miller_Loop          = 17613 * 1000;
+Final_Exponentiation = 24000 * 1000;
+
+\\ML254P = 1841*eFMu+457*eFSu+1371*eFR+9516*eFA+284*FMu+3*FA;
+\\eFI   = FI+2*FMu+2*FSu+3*FR+3*FA;
+
+\\ wNAF window width (opt by hand)
+GROUP0_wNAF          = 5;
+GROUP1_wNAF          = 5;
+TARGET_wNAF          = 5;

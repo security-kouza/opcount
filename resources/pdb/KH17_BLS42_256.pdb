@@ -1,0 +1,69 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\ BLS42 at 256-bit security level
+\\ Rev.0.0 2017/12/12
+\\ Source: Refined benchmark based on
+\\         "Secure and Efficient Pairing at 256-bit Security Level"
+\\         by Yutaro Kiyomura, Akiko Inoue, Yuto Kawahara, Masaya Yasuda,
+\\         Tsuyoshi Takagi and Tetsutaro Kobayashi. ACNS2017.
+\\         Refined data provided by Fumitaka Hoshino.
+\\ Base field size = 687 bits
+\\ Estimated Security Level = 256 bits
+\\ Group order = 516 bits
+\\ Status = []Theoretical Estimation, [x]Real Benchmark, []Toy Example
+\\ Environment:
+\\      CPU: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz stepping 01
+\\      OS: Linux 2.6 x86_64 (CentOS 6.8)
+\\      Compiler: gcc version 6.3.0 (GCC)
+
+
+\\ Common Parameters
+Sep                  = 256;  \\ security parameter: typically 128/192/256
+Order                = 516;  \\ Group order in bits = size of an Zp element = log_2(r)
+EmbDeg               = 42;   \\ Embedding degree
+ExtDeg		     = 7;    \\ Extension Degree for Group1
+
+
+\\ Measured functions
+CURVE                = "BLS-42";
+GROUP0_pow           = 3.703772 * Mclk;
+GROUP1_pow           = 39.341746 * Mclk;
+TARGET_pow           = 43.940653 * Mclk;
+Miller_Loop          = 30.520280 * Mclk;
+Final_Exponentiation = 82.152648 * Mclk;
+FA                   = 0.000041 * Mclk;
+FM                   = 0.000769 * Mclk;
+FS                   = 0.000718 * Mclk;
+FI                   = 0.016150 * Mclk;
+eFA                  = ExtDeg * FA;
+eFC                  = ExtDeg * FM;     \\ small constant mult
+eFM                  = 0.012818 * Mclk;
+eFS                  = 0.010392 * Mclk;
+eFI                  = 0.259986 * Mclk;
+GROUP0_mul           = 0.013382 * Mclk;
+GROUP0_square        = 0.006062 * Mclk;
+GROUP1_mul           = 0.209215 * Mclk;
+GROUP1_square        = 0.084392 * Mclk;
+TARGET_mul           = 0.203821 * Mclk;
+TARGET_square        = 0.147125 * Mclk;
+TARGET_inv           = 0.668975 * Mclk;
+\\ ---------------------------------------- 
+GROUP0_mul_a         = 0.019672 * Mclk;
+GROUP0_square_a      = 0.020680 * Mclk;
+GROUP0_mul_j         = 0.013382 * Mclk;
+GROUP0_square_j      = 0.006062 * Mclk;
+GROUP0_coordinate    = "J" ;
+GROUP0_wNAF          = 5 ;
+GROUP1_mul_a         = 0.321338 * Mclk;
+GROUP1_square_a      = 0.333787 * Mclk;
+GROUP1_mul_j         = 0.209215 * Mclk;
+GROUP1_square_j      = 0.084392 * Mclk;
+GROUP1_coordinate    = "J" ;
+GROUP1_wNAF          = 2 ;
+TARGET_wNAF          = 3 ;
+\\ ---------------------------------------- 

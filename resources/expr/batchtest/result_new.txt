@@ -1,0 +1,76 @@
+## Re-estimated results of estimating performance of AHNOP 17 scheme based on DB17 timing data.
+##
+## Copyright (c) 2017 NTT corp. - All Rights Reserved
+##
+##  This file is part of Opcount project which is released under Software
+##  License Agreement for Evaluation. See file LICENSE.pdf for full license
+##  details.
+##
+
+Estimating performance of tightSPS17 based on DB17
+
+Naiive:
+
+Evaluating  on BN_128.
+tSPSGen     = 33.65655750
+tSPSSign    = 27.02664000
+tSPSVerify = 207.3748500
+
+Evaluating  on BLS12_128.
+tSPSGen     = 23.27053500
+tSPSSign    = 18.81972000
+tSPSVerify = 141.7986000
+
+Evaluating  on KSS16_128.
+tSPSGen     = 18.10129750
+tSPSSign    = 14.84452200
+tSPSVerify = 97.11145400
+
+Evaluating  on KSS18_128.
+tSPSGen     = 15.51986333
+tSPSSign    = 12.57553000
+tSPSVerify = 111.9106010
+
+Batch only in G0
+
+Evaluating  on BN_128.
+tSPSGen     = 33.65655750
+tSPSSign    = 27.02664000
+tSPSVerify = 103.7243250
+
+Evaluating  on BLS12_128.
+tSPSGen     = 23.27053500
+tSPSSign    = 18.81972000
+tSPSVerify = 70.51117500
+
+Evaluating  on KSS16_128.
+tSPSGen     = 18.10129750
+tSPSSign    = 14.84452200
+tSPSVerify = 38.78969600
+
+Evaluating  on KSS18_128.
+tSPSGen     = 15.51986333
+tSPSSign    = 12.57553000
+tSPSVerify = 46.61972700
+
+Full Batch
+
+Evaluating  on BN_128.
+tSPSGen     = 33.65655750
+tSPSSign    = 27.02664000
+tSPSVerify = 82.40377500
+
+Evaluating  on BLS12_128.
+tSPSGen     = 23.27053500
+tSPSSign    = 18.81972000
+tSPSVerify = 57.03862500
+
+Evaluating  on KSS16_128.
+tSPSGen     = 18.10129750
+tSPSSign    = 14.84452200
+tSPSVerify = 35.69197500
+
+Evaluating  on KSS18_128.
+tSPSGen     = 15.51986333
+tSPSSign    = 12.57553000
+tSPSVerify = 40.30389000

@@ -1,0 +1,834 @@
+// A CSDL file of AHNOP 17 scheme applied batch verification technique
+//
+// Copyright (c) 2017 NTT corp. - All Rights Reserved
+//
+//  This file is part of Opcount project which is released under Software
+//  License Agreement for Evaluation. See file LICENSE.pdf for full license
+//  details.
+//
+
+inline "
+
+  for_statement(A_,B_,C_,D_) = {
+    eval(A_);
+    A_=0;
+    while(eval(B_),A_++;eval(C_));
+    return(A_ * D_) ;
+  }
+
+  if_statement(A_,B_,C_) = {
+    return (if_prob * B_ + (1 - if_prob) * C_) ;
+  }
+
+  ni = 10;
+  if_prob = 1/2 ;
+  batch_quality = 128 ;
+
+" ;
+
+
+// tight SPS_with GS proof 
+// M in G0
+
+// global parameters
+integer Sep;   // security parameter specified in PerfDB
+integer Order;   // group order (=q)
+integer batch_quality; // parameter for batch quality <= Sep
+
+group0 G;     // default generator for the left group
+group1 Gh;     // default generator for the right group
+target Gt;     // default generator for the target group Gt = e(G, Gh);
+
+integer rnd(){
+}
+
+group0 rnd_g(){
+  integer r;
+  return G^r;
+}
+
+group1 rnd_gh(){
+  integer r;
+  return Gh^r;
+}
+
+
+// GS-proof functions
+
+list GS_GenCrs_0(group0 G){
+	integer ch, xi;
+	group0 Q, U, V;
+	list CRS;
+
+	ch=rnd();
+	xi=rnd();	
+
+	Q=G^(ch);
+	U=G^(xi);
+	V=G^(ch*xi);
+	CRS=(G,Q, U, V);
+
+	return CRS;
+}
+
+list GS_ComInt_0(list crs, integer s)
+{
+	list  comv;
+	group0 G, Q, U, V;
+	integer r;
+	group0 c1, c2;
+
+	(G, Q, U, V) = crs;
+	r = rnd();
+
+	c1=U^(s)*G^(r);
+	c2=(V*G)^(s)*Q^(r);
+	comv = (c1, c2);
+
+	return (comv, r);
+}
+
+// special case, s=0
+list GS_ComIntZero_0(list crs)
+{
+	list  comv;
+	group0 G, Q, U, V;
+	integer r;
+	group0 c1, c2;
+
+	(G, Q, U, V) = crs;
+	r = rnd();
+
+	c1=G^(r);
+	c2=Q^(r);
+	comv = (c1, c2);
+
+	return (comv, r);
+}
+
+
+// default commitment for s=1, r=0
+list GS_DefaultComInt_0(list crs)
+{
+	list  comv;
+	group0 G, Q, U, V;
+	integer r=0;
+	group0 c1, c2;
+
+	(G, Q, U, V) = crs;
+
+	c1=U;
+	c2=V*G;
+	comv = (c1, c2);
+
+	return (comv, r);
+}
+
+
+list GS_GenCrs_1(group1 G){
+	integer ch, xi;
+	group1 Q, U, V;
+	list CRS;
+
+	ch=rnd();
+	xi=rnd();	
+
+	Q=G^(ch);
+	U=G^(xi);
+	V=G^(ch*xi);
+	CRS=(G, Q, U, V);
+
+	return CRS;
+}
+
+
+list GS_ComInt_1(list CRS, integer s)
+{
+	list  comv;
+	group1 G, Q, U, V;
+	integer r;
+	group1 c1, c2;
+
+	(G, Q, U, V) = CRS;
+	r = rnd();
+
+	c1=U^(s)*G^(r);
+	c2=(V*G)^(s)*Q^(r);
+	comv = (c1, c2);
+
+	return (comv, r);
+}
+
+// special case, s=0
+list GS_ComIntZero_1(list CRS)
+{
+	list  comv;
+	group1 G, Q, U, V;
+	integer r;
+	group1 c1, c2;
+
+	(G, Q, U, V) = CRS;
+	r = rnd();
+
+	c1=G^(r);
+	c2=Q^(r);
+	comv = (c1, c2);
+
+	return (comv, r);
+}
+
+list GS_DefaultComInt_1(list CRS)
+{
+	list  comv;
+	group1 G, Q, U, V;
+	integer r;
+	group1 c1, c2;
+
+	(G, Q, U, V) = CRS;
+	r = 0;
+
+	c1=U;
+	c2=V*G;
+	comv = (c1, c2);
+
+	return (comv, r);
+}
+
+group1 GS_Pf_MSE_1(group1 g1, group1 g2, group1 g3, integer a, integer b, integer c)
+{
+	group1 pi;
+	
+	pi=(g1^a)*(g2^(-b))*(g3^(-c));
+	
+	return pi;
+}
+
+// special case, a=0
+group1 GS_Pf_MSEZero_1(group1 g1, group1 g2, group1 g3, integer b, integer c)
+{
+	group1 pi;
+	
+	pi=(g2^(-b))*(g3^(-c));
+	
+	return pi;
+}
+
+group0 GS_Pf_MSE_0(group0 g1, group0 g2, group0 g3, integer a, integer b, integer c)
+{
+	group0 pi;
+
+	pi=(g1^a)*(g2^(-b))*(g3^(-c));
+	
+	return pi;
+}
+
+// special case, a=0
+group0 GS_Pf_MSEZero_0(group0 g1, group0 g2, group0 g3, integer b, integer c)
+{
+	group0 pi;
+
+	pi=(g2^(-b))*(g3^(-c));
+	
+	return pi;
+}
+
+list GS_Pf_NonQE(list CRS0, list CRS1, integer z0, integer z1, integer x2, integer z2, integer rz0, integer rz1, integer rx2, integer rz2)
+{
+	list  lrho;
+	group1 Gh, Qh, Uh, Vh;
+	group0 G, Q, U, V;
+
+	(G, Q, U, V) = CRS0;
+	(Gh, Qh, Uh, Vh) = CRS1;
+
+	integer r;
+	r = rnd();
+
+	group0 th1, th2;
+	group1 pi1, pi2;
+
+// General Formula for arbitrary inputs
+	th1=U^(z0*(rx2-rz2)-z1*(rx2-rz2)) * G^((rx2-rz2)*(rz0-rz1)-r);
+	th2=((V*G)^(z0*(rx2-rz2)-z1*(rx2-rz2)))*(Q^((rx2-rz2)*(rz0-rz1)-r));
+	pi1=(Uh^(x2*(rz0-rz1)-z2*(rz0-rz1)))*Gh^r;
+	pi2=((Vh*Gh)^(x2*(rz0-rz1)-z2*(rz0-rz1)))*Qh^r;
+
+	lrho=(th1, th2, pi1, pi2);
+	
+	return lrho;
+}
+
+list GS_Pf_NonQEZero(list CRS0, list CRS1, integer z0, integer z1,   integer rz0, integer rz1, integer rx2, integer rz2)
+{
+	list  lrho;
+	group1 Gh, Qh, Uh, Vh;
+	group0 G, Q, U, V;
+
+	(G, Q, U, V) = CRS0;
+	(Gh, Qh, Uh, Vh) = CRS1;
+
+	integer r;
+	r = rnd();
+
+	group0 th1, th2;
+	group1 pi1, pi2;
+
+// Simplified Formula for z0=z1 and x2=z2=0
+	th1=G^((rx2-rz2)*(rz0-rz1)-r);
+	th2=Q^((rx2-rz2)*(rz0-rz1)-r);
+	pi1=Gh^r;
+	pi2=Qh^r;
+
+	lrho=(th1, th2, pi1, pi2);
+	
+	return lrho;
+}
+
+
+// ElGamal Encryption functions
+// As it is used as a commitment scheme, we do not use a secret-key
+// or decryption function.
+// We allow randomness re-use in encryption in G1.
+//
+list ElGamal_KeyGen_1(group1 Gh)
+{
+	integer y;
+	group1 Yh;
+
+	y = rnd();
+	Yh=Gh^(y);
+
+	return (Yh, y);
+}
+
+list ElGamal_KeyGen_0(group0 G)
+{
+	integer y;
+	group0 Y;
+
+	y = rnd();
+	Y=G^(y);
+
+	return (Y, y);
+}
+
+list ElGamal_DblEnc_1(integer x0, integer x1, group1 Gh, group1 Yh0, group1 Yh1)
+{
+	integer r;
+	group1 Eh0, Eh1, Ehr;
+
+	r = rnd();
+	Eh0=Gh^(x0)*Yh0^(r);
+	Eh1=Gh^(x1)*Yh1^(r);
+	Ehr=Gh^(r);
+
+	return (Eh0, Eh1, Ehr);
+}
+
+list ElGamal_Enc_0(integer x, group0 G, group0 Y)
+{
+	integer r;
+	group0 E, Er;
+
+	r = rnd();
+	E=G^(x)*Y^(r);
+	Er=G^(r);
+	return (E, Er);
+}
+
+// special case, x=0
+list ElGamal_EncZero_0(group0 G, group0 Y)
+{
+	integer r;
+	group0 E, Er;
+
+	r = rnd();
+	E=Y^(r);
+	Er=G^(r);
+	return (E, Er);
+}
+
+
+// Partially One-Time Signature Functions
+// We only consider non-adaptive signing that 
+// generates a one-time key internally at the time of signing.
+// A message consists of 10 group elements in G0.
+
+list POS_Keygen(group1 Gh)
+{
+	list POSKey;
+	integer w;
+	integer gami;
+	group1  Ghr, Ghi;
+	integer i;
+
+	for(i=0; i<10; i++){
+		gami = rnd();
+		Ghi = Gh^(gami);
+	}
+	w = rnd();
+	Ghr = Gh^w;
+
+	POSpk=(G, Gh, Ghr, Ghi);
+	POSsk=(w, gami);
+
+	return (POSpk, POSsk);
+} 
+
+
+
+list POS_Sign(list POSpk, list POSsk, group0 Mi)
+{
+	group0 G;
+	group1 Gh, Ghr, Ghi;
+	integer w, gami;
+	integer al;
+	group1 Ah;
+	group0 Z, R;
+	integer ro;
+
+	list sigma;
+	
+	// Parse the arguments
+	(G, Gh, Ghr, Ghi)=POSpk;
+	(w, gami)=POSsk;
+
+	// One-time key generation
+	al=rnd();
+	Ah=Gh^(-al);
+
+	// Signature generation
+	ro=rnd();
+	Z=G^(al-ro*w);
+	R=G^(ro)*product(10,Mi^(-gami));
+
+	sigma=(Ah, Z, R);
+	return sigma;
+}
+
+
+//integer POS_Verif(list POSpk, group0 Mi, list sigma)
+//{
+//	group0 G, Md;
+//	group1 Gh, Ghr, Ghi;
+//	group1 Ah;
+//	group0 Z, R;
+//	target Mt, Lt, Rt;
+//
+//
+//	// Parse the arguments
+//	(G, Gh, Ghr, Ghi)=POSpk;
+//	// Parse signature
+//	(Ah, Z, R)=sigma;
+//	
+//	Mt = 1;
+//	for(i=1;i<10;i++){	
+//		Mt = Mt * e(Mi, Ghi); //M_i^{-gamma_i}//
+//	}
+//
+//	Lt=e(G, Ah);
+//	Rt=e(Z, Gh)*e(R, Ghr)*Mt;
+//		
+//   if_statement(Lt=Rt){
+//   return 1;
+//  }
+//
+//}
+
+
+////////////////////////////////////////////////////////
+
+
+tSPSGen(integer ord, group0 G, group1 Gh){
+
+integer y0, y1, y2;
+group1 Yh0, Yh1;
+group0  Y2;
+
+(Y2, y2)=ElGamal_KeyGen_0(G);
+(Yh0, y0)=ElGamal_KeyGen_1(Gh);
+(Yh1, y1)=ElGamal_KeyGen_1(Gh);
+
+
+integer x0, x1, x2;
+x0=rnd();
+x1=0;
+x2=0;
+
+
+list CRS00, CRS10, CRS11;
+
+CRS00=GS_GenCrs_0(G);
+CRS10=GS_GenCrs_0(G);
+CRS11=GS_GenCrs_1(Gh);
+
+integer rx00, rx10, ry00, rhx21, ry01, ry11, rhy21; 
+list comx00, comx10, comy00, comhx21, comy01, comy11, comhy21; 
+
+(comx00, rx00)=GS_ComInt_0(CRS00, x0);
+// for x1
+(comx10, rx10)=GS_ComIntZero_0(CRS00);
+(comy00, ry00)=GS_ComInt_0(CRS00, y0);
+// for x2
+(comhx21, rhx21)=GS_ComIntZero_1(CRS11);
+(comy01, ry01)=GS_ComInt_0(CRS10, y0);
+(comy11, ry11)=GS_ComInt_0(CRS10, y1);
+(comhy21, rhy21)=GS_ComInt_1(CRS11, y2);
+
+//(com10, r10)=GS_ComInt_0(CRS00, 1);
+//(com11, r11)=GS_ComInt_0(CRS10, 1);
+//(comh11, rh11)=GS_ComInt_1(CRS11, 1);
+
+list POSpk, POSsk;
+
+(POSpk, POSsk)=POS_Keygen(Gh);
+
+list pk, sk;
+
+pk=(G, Gh, CRS00, CRS10, CRS11, Yh0, Yh1, Y2, comx00, comx10, comy00, comhx21, comy01, comy11, comhy21, POSpk);
+sk=(x0, y0, y1, y2, rx00, rx10, ry00, rx21, ry01, ry11, ry21);
+
+return (pk,sk);
+}
+
+/////////////////////////
+
+//
+//// Signing 
+//
+
+tSPSSign(list pk, list sk, group0 Mi){
+	group0 G, Y2; 
+	group1 Gh, Yh0, Yh1;
+	list CRS00, CRS10, CRS11, comx00, comx10, comy00, comhx21, comy01, comy11, comhy21, POSpk;
+	integer z0, z1, z2;	
+	integer x0, y0, y1, y2, rx00, rx10, ry00, rhx21, ry01, ry11, rhy21;
+	integer x2;
+
+	(G, Gh, CRS00, CRS10, CRS11, Yh0, Yh1, Y2, comx00, comx10, comy00, comhx21, comy01, comy11, comhy21, POSpk)=pk;
+	(x0, y0, y1, y2, rx00, rx10, ry00, rhx21, ry01, ry11, rhy21)=sk;
+
+	group0 G0, Q0, U0, V0;
+	group0 G1, Q1, U1, V1;
+	group1 Gh1, Qh1, Uh1, Vh1;
+	
+	(G, Q0, U0, V0)=CRS00;
+	(G, Q1, U1, V1)=CRS10;
+	(Gh, Qh1, Uh1, Vh1)=CRS11;
+	
+	z0=x0;
+	z1=x0;
+	z2=0;
+	
+	x2=0;
+
+	// ElGamal Enc of z0, z1, z2 //
+	group1 Eh0, Eh1, Ehs;
+	group0 E2, Et;
+
+	(Ehz0, Ehz1, Ehs)=ElGamal_DblEnc_1(z0, z1, Gh, Yh0, Yh1);
+	(Ez2, Et)=ElGamal_EncZero_0(G, Y2);
+
+	// Commit of z0, z1, z2 //
+	
+	list comz00, comz01, comz11, comhz21, com10, com11;
+	integer rz00, rz01, rz11, rhz21;
+	
+	(comz00, rz00)=GS_ComInt_0(CRS00, z0);
+	(comz01, rz01)=GS_ComInt_0(CRS10, z0);
+	(comz11, rz11)=GS_ComInt_0(CRS10, z1);
+// for z2
+	(comhz21, rhz21)=GS_ComIntZero_1(CRS11);
+
+//	(com10, r10)=GS_ComInt_0(CRS00, 1);
+//	(com11, r11)=GS_ComInt_0(CRS10, 1);
+	
+	// GS proofs //
+	group1 rhoh00, rhoh01, rhoh11, rhoh12, rho13;
+	list lrho10;
+
+	rhoh00=GS_Pf_MSE_1(Gh, Gh, Ah, rz00, rx00, rx10);
+	rhoh01=GS_Pf_MSEZero_1(Ehz0, Gh, Ehs, rz00, ry00);
+	rhoh11=GS_Pf_MSEZero_1(Ehz0, Gh, Ehs, rz01, ry01);
+	rhoh12=GS_Pf_MSEZero_1(Ehz1, Gh, Ehs, rz11, ry11);
+	rho13=GS_Pf_MSEZero_0(Ez2, G, Et, rhz21, rhy21);
+
+	lrho10=GS_Pf_NonQEZero(CRS10, CRS11, z0, z1, rz01, rz11, rhx21, rhz21);
+
+	// POS signing //
+	group0 Z, R;
+	group1 Ah;
+	(Ah, Z, R)=POS_Sign(POSpk, POSsk, Mi);
+
+	list sigma;
+	sigma=(Ah, Z, R, Ehz0, Ehz1, Ehs, Ez2, Et, comz00, comz01, comz11, comhz21, rhoh00, rhoh01, lrho10, rhoh11, rhoh12, rho13);
+	
+	return sigma;
+}
+
+//
+//// Verification
+//
+
+tSPSVerify(list sigma, list pk, group0 Mi){
+	group0 G,Y2;
+	group1 Gh, Yh0, Yh1;
+	list CRS00, CRS10, CRS11, comx00, comx10, comy00, comhx21, comy01, comy11, comhy21, POSpk;
+
+	(G, Gh, CRS00, CRS10, CRS11, Yh0, Yh1, Y2, comx00, comx10, comy00, comhx21, comy01, comy11, comhy21, POSpk)=pk;
+
+	group0 Q0, U0, V0;
+	group0 Q1, U1, V1;
+	group1 Qh1, Uh1, Vh1;
+
+	(G, Q0, U0, V0)=CRS00;
+	(G, Q1, U1, V1)=CRS10;
+	(Gh, Qh1, Uh1, Vh1)=CRS11;
+	
+	group0 C1x00, C2x00;
+	group0 C1x10, C2x10;
+	group0 C1y00, C2y00;
+	group1 D1x21, D2x21;
+	group0 C1y01, C2y01;
+	group0 C1y11, C2y11;
+	group1 D1y21, D2y21;
+	
+	(C1x00, C2x00)=comx00;
+	(C1x10, C2x10)=comx10;
+	(C1y00, C2y00)=comy00;
+	(D1x21, D2x21)=comhx21;
+	(C1y01, C2y01)=comy01;
+	(C1y11, C2y11)=comy11;
+	(D1y21, D2y21)=comhy21;
+
+	group1 Ghr, Ghi;
+	group0 Gpos;
+	(G, Gh, Ghr, Ghi)=POSpk;
+	
+	group0 Z, R, Ez2, Et;
+	group1 Ah, Ehz0, Ehz1, Ehs;
+	list comz00, comz01, comz11, comhz21;
+	group1 rhoh00, rhoh01, rhoh11, rhoh12;
+	group0 rho13;
+	list lrho10;
+	(Ah, Z, R, Ehz0, Ehz1, Ehs, Ez2, Et, comz00, comz01, comz11, comhz21, rhoh00, rhoh01, lrho10, rhoh11, rhoh12, rho13)=sigma;	
+	
+	group0	C1z00, C2z00, C1z01, C2z01, C1z11, C2z11;
+	group0  _C1z01_C1z11, _C2z01_C2z11;
+	group1  D1z21, D2z21;
+	
+	(C1z00, C2z00)=comz00;
+	(C1z01, C2z01)=comz01;
+	(C1z11, C2z11)=comz11;
+	(D1hz21, D2hz21)=comhz21;
+	
+	group0 thet101, thet102;
+	group1 pih101, pih102;
+	(thet101, thet102, pih101, pih102)=lrho10;
+
+	// [1] generation //
+	list com10, com11, comh11;
+	integer r10, r11, rh11;
+	(com10, r10)=GS_DefaultComInt_0(CRS00);
+	(com11, r11)=GS_DefaultComInt_0(CRS10);
+	(comh11, rh11)=GS_DefaultComInt_1(CRS11);
+
+	group0 C110, C210, C111, C211;
+	group1 D111, D211;
+	(C110, C210)=com10;
+	(C111, C211)=com11;
+	(D111, D211)=comh11;
+
+// Verification equations //
+	
+//	target Mt;
+//	Mt = 1;
+//	for(i=1;i<10;i++){	
+//		Mt = Mt * e(Mi, Ghi); //M_i^{-gamma_i}//
+//	}
+
+	integer b,c,d,f,h,j,k,L,p,q,r,s,t,w; 
+	b=rnd();
+	c=rnd();
+	d=rnd();
+	f=rnd();
+	h=rnd();
+	j=rnd();
+	k=rnd();
+	L=rnd();
+	p=rnd();
+	q=rnd();
+	r=rnd();
+	s=rnd();
+	t=rnd();
+	w=rnd();	
+
+	target output;
+
+	_C1z01_C1z11 = C1z01 * C1z11^(-1);
+	_C2z01_C2z11 = C2z01 * C2z11^(-1);
+
+	output = 
+	e(bitexp(batch_quality, 
+	C1x00^(-b)*
+	C2x00^(-c)*
+	C1z00^(-d)*
+	C2z00^(-f)*
+	C1z01^(-p)*
+	C2z01^(-q)*
+	C1z11^(-r)*
+	C2z11^(-s)*
+	C1z00^b *
+	C1z00^c *
+	thet101^(-h) *
+	thet102^(-j) *
+	Z *
+	rho13^(-t) 
+	),
+	Gh
+	) *
+	e(
+	G,
+	bitexp(batch_quality, 
+	Ah *
+	rhoh00^(-b) *
+	rhoh01^(-d) *
+	pih101^(-h) *
+	rhoh11^(-p) *
+	pih102^(-k) *
+	rhoh12^(-r) *
+	D2z21^(-w) *
+	D1z21^(-t)
+	)
+	) *
+	e(
+	Q0,
+	bitexp(batch_quality, 
+	rhoh00^(-c) *
+	rhoh01^(-f)
+	)
+	) *
+	e(
+	Q1,
+	bitexp(batch_quality, 
+	pih101^(-j) *
+	pih102^(-L) *
+	rhoh11^(-q) *
+	rhoh12^(-s)
+	)
+	) *
+	e(bitexp(batch_quality, 
+	thet101^(-k) *
+	thet102^(-L) *
+	rho13^(-w)),
+	Qh1
+	) *
+	e(bitexp(batch_quality, 
+	C1y00^(-d) *
+	C2y00^(-f) *
+	C1y01^(-p) *
+	C1y11^(-r) *
+	C2y01^(-q) *
+	C2y11^(-s)), 
+	Ehs
+	) *
+	e(bitexp(batch_quality, 
+	C110^d *
+	C111^p *
+	C211^q *
+	C210^f), 
+	Ehz0
+	) *
+	e(bitexp(batch_quality, 
+	C111^r *
+	C211^s), 
+	Ehz1
+	) *
+	e(
+	Et^(-1), 
+	bitexp(batch_quality, 
+	D1y21^t *
+	D2y21^w)
+	) *
+	e(
+	Ez2, 
+	bitexp(batch_quality, 
+	D111^t *
+	D211^w
+	)
+	) *
+	e(
+	bitexp(batch_quality, 
+	(_C1z01_C1z11)^h *
+	(_C2z01_C2z11)^j), 
+	D1x21
+	) *
+	e(
+	bitexp(batch_quality, 
+	(_C1z01_C1z11)^k *
+	(_C2z01_C2z11)^L), 
+	D2x21
+	) *
+	e(
+	bitexp(batch_quality, 
+	(_C1z01_C1z11)^(-h) *
+	(_C2z01_C2z11)^(-j)),  
+	D1z21
+	) *
+	e(
+	bitexp(batch_quality, 
+	(_C1z01_C1z11)^(-k) *
+	(_C2z01_C2z11)^(-L)), 
+	D2z21
+	) *
+	e(
+	bitexp(batch_quality, 
+	C1x10^(-b) *
+	C2x10^(-c)), 
+	Ah
+	) *
+	e(R,Ghr)* 
+	product(10, e(Mi,Ghi));
+	
+	if(output==1){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+
+//POS
+// 1=e(G, Ah)e(Z, Gh)*e(R,Ghr)* prod e(Mi, Ghi)//
+////CRS00
+//rhoh00
+// e(C1z00, Gh)*e(C1x00, Gh^(-1))*e(C1z10, Ah^(-1))=e(G, rhoh00)
+// e(C2z00, Gh)*e(C2x00, Gh^(-1))*e(C2z10, Ah^(-1))=e(Q0, rhoh00)
+//rhoh01
+// e(C110, Ehz0)*e(C1z00, Gh^(-1))*e(C1y00, Ehs^(-1))=e(G, rhoh01)
+// e(C210, Ehz0)*e(C2z00, Gh^(-1))*e(C2y00, Ehs^(-1))=e(Q0, rhoh01)
+
+////CRS10, CRS11
+//rho10
+//e(C1z01 * (C1z11)^(-1), D1x21) * e(C1z01 * (C1z11)^(-1), (D1z21)^(-1))=
+//e(G, pih101)*e(theh101, Gh)
+//
+//e(C2z01 * (C2z11)^(-1), D1x21) * e(C2z01 * (C2z11)^(-1), (D1z21)^(-1))=
+//e(Q1, pih101)*e(theh102, Gh)
+//
+//e(C1z01 * (C1z11)^(-1), D2x21) * e(C1z01 * (C1z11)^(-1), (D2z21)^(-1))=
+//e(G, pih102)*e(theh101, Qh1)
+//
+//e(C2z01 * (C2z11)^(-1), D2x21) * e(C2z01 * (C2z11)^(-1), (D2z21)^(-1))=
+//e(Q1, pih102)*e(theh102, Qh1)
+//
+//rhoh11
+// e(C111, Ehz0)*e(C1z01, Gh^(-1))*e(C1y01, Ehs^(-1))=e(G, rhoh11)
+// e(C211, Ehz0)*e(C2z01, Gh^(-1))*e(C2y01, Ehs^(-1))=e(Q1, rhoh11)
+//rhoh12
+// e(C111, Ehz1)*e(C1z11, Gh^(-1))*e(C1y11, Ehs^(-1))=e(G, rhoh12)
+// e(C211, Ehz1)*e(C2z11, Gh^(-1))*e(C2y11, Ehs^(-1))=e(Q1, rhoh12)
+//rho13
+// e(Ez2, D111)*e(G^(-1), D1z21)*e(Et^(-1), D1y21)=e(rho13, Gh)
+// e(Ez2, D211)*e(G^(-1), D2z21)*e(Et^(-1), D2y21)=e(rho13, Qh1)
+

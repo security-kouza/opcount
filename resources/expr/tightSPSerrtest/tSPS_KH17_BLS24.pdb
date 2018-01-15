@@ -1,0 +1,20 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\
+\\ Result of benchmark: tightSPS(AHNOP17) with KH17_BLS24_256
+\\ Rev.0.0 2017/12/18
+\\ Status = []Theoretical Estimation, [x]Real Benchmark, []Toy Example
+\\ Environment:
+\\      CPU: Intel(R) Xeon(R) CPU E5-2699 v4 @ 2.20GHz stepping 01
+\\      OS: Linux 2.6 x86_64 (CentOS 6.8)
+\\      Compiler: gcc version 6.3.0 (GCC)
+
+tSPSGen_implement    = 944.082542 * Mclk;
+tSPSSign_implement   = 903.359157 * Mclk;
+tSPSVerify_implement = 7617.399423 * Mclk;
+tSPSVerify2_implement= 3934.260002 * Mclk;
