@@ -542,7 +542,9 @@ tSPSSign(list pk, list sk, group0 Mi){
 //	(com11, r11)=GS_ComInt_0(CRS10, 1);
 	
 	// GS proofs //
-	group1 rhoh00, rhoh01, rhoh11, rhoh12, rho13;
+	group1 rhoh00, rhoh01, rhoh11, rhoh12;
+	group0 rho13;
+
 	list lrho10;
 
 	rhoh00=GS_Pf_MSE_1(Gh, Gh, Ah, rz00, rx00, rx10);
