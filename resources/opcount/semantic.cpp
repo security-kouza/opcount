@@ -244,6 +244,7 @@ reduced * operation_MUL(reduced * X, reduced * Y, cell * L){
         (X->type == TYPE_GROUP)  ||
         (X->type == TYPE_GROUP0) ||
         (X->type == TYPE_GROUP1) ||
+        (X->type == TYPE_GROUP2) ||
         (X->type == TYPE_DUPLEX) ||
         (X->type == TYPE_PROHIBITED)||
         (X->type == TYPE_TARGET)
@@ -260,6 +261,7 @@ reduced * operation_MUL(reduced * X, reduced * Y, cell * L){
         (Y->type == TYPE_GROUP)  ||
         (Y->type == TYPE_GROUP0) ||
         (Y->type == TYPE_GROUP1) ||
+        (Y->type == TYPE_GROUP2) ||
         (Y->type == TYPE_DUPLEX) ||
         (Y->type == TYPE_PROHIBITED)||
         (X->type == TYPE_TARGET)
@@ -272,6 +274,7 @@ reduced * operation_MUL(reduced * X, reduced * Y, cell * L){
         (X->type == TYPE_TARGET) ||
         (X->type == TYPE_GROUP0) ||
         (X->type == TYPE_GROUP1) ||
+        (X->type == TYPE_GROUP2) ||
         (X->type == TYPE_DUPLEX) ||
         (X->type == TYPE_PROHIBITED)
        )&&(
@@ -280,7 +283,8 @@ reduced * operation_MUL(reduced * X, reduced * Y, cell * L){
   if((X->type == TYPE_TARGET) ||
      (X->type == TYPE_GROUP)  ||
      (X->type == TYPE_GROUP0) ||
-     (X->type == TYPE_GROUP1) )
+     (X->type == TYPE_GROUP1) ||
+     (X->type == TYPE_GROUP2) )
   {
     formula total = formula() ;
     formula batch = (X->batch["e"] + Y->batch["e"]) * formula("e") +
@@ -316,6 +320,7 @@ reduced * operation_DIV(reduced * X, reduced * Y, cell * L){
         (X->type == TYPE_GROUP)  ||
         (X->type == TYPE_GROUP0) ||
         (X->type == TYPE_GROUP1) ||
+        (X->type == TYPE_GROUP2) ||
         (X->type == TYPE_DUPLEX) ||
         (X->type == TYPE_PROHIBITED)||
         (X->type == TYPE_TARGET)
@@ -331,6 +336,7 @@ reduced * operation_DIV(reduced * X, reduced * Y, cell * L){
         (Y->type == TYPE_GROUP)  ||
         (Y->type == TYPE_GROUP0) ||
         (Y->type == TYPE_GROUP1) ||
+        (Y->type == TYPE_GROUP2) ||
         (Y->type == TYPE_DUPLEX) ||
         (Y->type == TYPE_PROHIBITED)
     ) return Y ;
@@ -347,6 +353,7 @@ reduced * operation_DIV(reduced * X, reduced * Y, cell * L){
         (X->type == TYPE_TARGET) ||
         (X->type == TYPE_GROUP0) ||
         (X->type == TYPE_GROUP1) ||
+        (X->type == TYPE_GROUP2) ||
         (X->type == TYPE_DUPLEX) ||
         (X->type == TYPE_PROHIBITED)
        )&&(
@@ -356,7 +363,8 @@ reduced * operation_DIV(reduced * X, reduced * Y, cell * L){
   if((X->type == TYPE_TARGET) ||
      (X->type == TYPE_GROUP)  ||
      (X->type == TYPE_GROUP0) ||
-     (X->type == TYPE_GROUP1) )
+     (X->type == TYPE_GROUP1) ||
+     (X->type == TYPE_GROUP2) )
   {
     formula total = formula() ;
     formula batch = (X->batch["e"] + Y->batch["e"]) * formula("e") +
@@ -394,6 +402,7 @@ reduced * operation_POW(reduced * X, reduced * Y, cell * L){
         (X->type == TYPE_GROUP)  ||
         (X->type == TYPE_GROUP0) ||
         (X->type == TYPE_GROUP1) ||
+        (X->type == TYPE_GROUP2) ||
         (X->type == TYPE_DUPLEX) ||
         (X->type == TYPE_PROHIBITED)||
         (X->type == TYPE_TARGET)
@@ -414,6 +423,7 @@ reduced * operation_POW(reduced * X, reduced * Y, cell * L){
         (X->type == TYPE_TARGET) ||
         (X->type == TYPE_GROUP0) ||
         (X->type == TYPE_GROUP1) ||
+        (X->type == TYPE_GROUP2) ||
         (X->type == TYPE_DUPLEX) ||
         (X->type == TYPE_PROHIBITED)
        )&&(
@@ -422,7 +432,8 @@ reduced * operation_POW(reduced * X, reduced * Y, cell * L){
   if((X->type == TYPE_TARGET) ||
      (X->type == TYPE_GROUP)  ||
      (X->type == TYPE_GROUP0) ||
-     (X->type == TYPE_GROUP1) )
+     (X->type == TYPE_GROUP1) ||
+     (X->type == TYPE_GROUP2) )
   {
     string s = Y->type + 5 ;
     s += "_mul" ;
@@ -573,6 +584,7 @@ define_is_(prohibited) ; // static int is_prohibited() ;
 
 define_is_(group0)     ; // static int is_group0() ;
 define_is_(group1)     ; // static int is_group1() ;
+define_is_(group2)     ; // static int is_group2() ;
 define_is_(duplex)     ; // static int is_duplex() ;
 
 #define define_TYPE_(X) char * TYPE_ ## X = "TYPE_" # X
@@ -585,6 +597,7 @@ define_TYPE_(PROHIBITED)    ;          // TYPE_PROHIBITED
 
 define_TYPE_(GROUP0)        ;          // TYPE_GROUP0
 define_TYPE_(GROUP1)        ;          // TYPE_GROUP1
+define_TYPE_(GROUP2)        ;          // TYPE_GROUP2
 define_TYPE_(DUPLEX)        ;          // TYPE_DUPLEX
 define_TYPE_(LITERAL)       ;          // TYPE_LITERAL
 define_TYPE_(IDENTIFIER)    ;          // TYPE_IDENTIFIER
@@ -620,6 +633,7 @@ static reduced * process_IDENTIFIER_RAW (cell * L, int push_back){
     }else if(is_prohibited(declaration_stack[i])){         R = operation_NEW(TYPE_PROHIBITED) ;
     }else if(is_group0    (declaration_stack[i])){         R = operation_NEW(TYPE_GROUP0,formula(),1,formula("b"));
     }else if(is_group1    (declaration_stack[i])){         R = operation_NEW(TYPE_GROUP1,formula(),1,formula("b"));
+    }else if(is_group2    (declaration_stack[i])){         R = operation_NEW(TYPE_GROUP2,formula(),1,formula("b"));
     }else if(is_duplex    (declaration_stack[i])){         R = operation_NEW(TYPE_DUPLEX) ;
     }else if(is_target    (declaration_stack[i])){         R = operation_NEW(TYPE_TARGET,formula(),1,formula("b"));
     }else if(is_list      (declaration_stack[i])){         R = operation_NEW(TYPE_LIST_VARIABLE) ;
@@ -1266,6 +1280,7 @@ static reduced * func_expand(cell * L, int i){
     else if(is_prohibited_function(declaration_stack[i])){ R = operation_NEW(TYPE_PROHIBITED,total) ; }
     else if(is_group0_function    (declaration_stack[i])){ R = operation_NEW(TYPE_GROUP0,total,0,formula("b")) ; }
     else if(is_group1_function    (declaration_stack[i])){ R = operation_NEW(TYPE_GROUP1,total,0,formula("b")) ; }
+    else if(is_group2_function    (declaration_stack[i])){ R = operation_NEW(TYPE_GROUP2,total,0,formula("b")) ; }
     else if(is_duplex_function    (declaration_stack[i])){ R = operation_NEW(TYPE_DUPLEX,total) ; }
     else if(is_target_function    (declaration_stack[i])){ R = operation_NEW(TYPE_TARGET,total,0,formula("b")) ; }
     else                                                 { R = operation_NEW(TYPE_NULL,total) ; }
@@ -1284,7 +1299,7 @@ static int is_function_(cell * prog, int i){
 }
 
 static int is_pairing(int i){
-  static cell * prog = yyparse("target e(group0 g0, group1 g1) ;") ;
+  static cell * prog = yyparse("target e(group1 g1, group2 g2) ;") ;
   return is_function_(prog, i) ;
 }
 

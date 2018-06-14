@@ -114,6 +114,7 @@ char * SYMBOL_PROHIBITED       = "prohibited"       ;
 char * SYMBOL_TARGET           = "target"           ;
 char * SYMBOL_GROUP0           = "group0"           ;
 char * SYMBOL_GROUP1           = "group1"           ;
+char * SYMBOL_GROUP2           = "group2"           ;
 char * SYMBOL_DUPLEX           = "duplex"           ;
 char * SYMBOL_LIST             = "list"             ;
 char * SYMBOL_FUNCTION         = "function"         ;
@@ -221,6 +222,7 @@ static unordered_map<char *, int> reserved_word = {
   {SYMBOL_GROUP           ,TYPE            }, // <-
   {SYMBOL_GROUP0          ,TYPE            }, // <-
   {SYMBOL_GROUP1          ,TYPE            }, // <-
+  {SYMBOL_GROUP2          ,TYPE            }, // <-
   {SYMBOL_DUPLEX          ,TYPE            }, // <-
   {SYMBOL_TARGET          ,TYPE            }, // <-
   {SYMBOL_LIST            ,TYPE            }, // <-
@@ -329,6 +331,7 @@ static unordered_map<string, char *> unique_symbol_table = {
   {SYMBOL_GROUP           ,SYMBOL_GROUP           },
   {SYMBOL_GROUP0          ,SYMBOL_GROUP0          },
   {SYMBOL_GROUP1          ,SYMBOL_GROUP1          },
+  {SYMBOL_GROUP2          ,SYMBOL_GROUP2          },
   {SYMBOL_DUPLEX          ,SYMBOL_DUPLEX          },
   {SYMBOL_TARGET          ,SYMBOL_TARGET          },
   {SYMBOL_LIST            ,SYMBOL_LIST            },

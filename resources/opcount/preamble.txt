@@ -8,7 +8,7 @@
  */
 
 group  Repeat (integer n , group  g ) ;
-target e      (group0  g0, group1 g1) ;
+target e      (group1  g1, group2 g2) ;
 target product(integer n , target t ) ;
 group  bitexp (integer n , group  g ) ;
 

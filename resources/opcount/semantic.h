@@ -28,6 +28,7 @@ declare_TYPE_(PROHIBITED)    ;          // TYPE_PROHIBITED
 
 declare_TYPE_(GROUP0)        ;          // TYPE_GROUP0
 declare_TYPE_(GROUP1)        ;          // TYPE_GROUP1
+declare_TYPE_(GROUP2)        ;          // TYPE_GROUP1
 declare_TYPE_(DUPLEX)        ;          // TYPE_DUPLEX
 declare_TYPE_(LITERAL)       ;          // TYPE_LITERAL
 declare_TYPE_(IDENTIFIER)    ;          // TYPE_IDENTIFIER
