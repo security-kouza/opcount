@@ -34,29 +34,29 @@ inline "
 integer Sep;   // security parameter specified in PerfDB
 integer Order;   // group order (=q)
 
-group0 G;     // default generator for the left group
-group1 Gh;     // default generator for the right group
+group1 G;     // default generator for the left group
+group2 Gh;     // default generator for the right group
 target Gt;     // default generator for the target group Gt = e(G, Gh);
 
 integer rnd(){
 }
 
-group0 rnd_g(){
+group1 rnd_g(){
   integer r;
   return G^r;
 }
 
-group1 rnd_gh(){
+group2 rnd_gh(){
   integer r;
   return Gh^r;
 }
 
 // dummy functions for x^(-1)
-group0 inv0(group0 x){
+group1 inv0(group1 x){
   return x;
 }
 
-group1 inv1(group1 x){
+group2 inv1(group2 x){
   return x;
 }
 
@@ -68,8 +68,8 @@ group1 inv1(group1 x){
 
 // pargen
 list KPW15_pargen(){
-	group0 g;
-	group1 gh;
+	group1 g;
+	group2 gh;
 	g=rnd_g();
 	gh=rnd_gh();
 	
@@ -82,8 +82,8 @@ list KPW15_pargen(){
 // Special case k=1, SXDH setting
 
 KPW15_gen(){
-	group0 g;
-	group1 gh;
+	group1 g;
+	group2 gh;
 	
 	g=rnd_g();
 	gh=rnd_gh();
@@ -126,9 +126,9 @@ KPW15_gen(){
 	pp11=(b1*kk111) + (b2*kk121);
 	pp12=(b1*kk112) + (b2*kk122);
 
-	group0 P01, P02, P11, P12, B1, B2;
-	group1 Ch01, Ch02, Ch11, Ch12, Ah1, Ah2;
-	group1 Cbhi, Cbh0;	
+	group1 P01, P02, P11, P12, B1, B2;
+	group2 Ch01, Ch02, Ch11, Ch12, Ah1, Ah2;
+	group2 Cbhi, Cbh0;	
 	
 	P01=g^(pp01);
 	P02=g^(pp02);
@@ -160,11 +160,11 @@ KPW15_gen(){
 }
 
 
-KPW15_sign(list pk, list sk, group0 mui){
+KPW15_sign(list pk, list sk, group1 mui){
 
-	group0 P01, P02, P11, P12, B1, B2, g;
-	group1 Ch01, Ch02, Ch11, Ch12, Ah1, Ah2, gh;
-	group1 Cbh0, Cbhi;
+	group1 P01, P02, P11, P12, B1, B2, g;
+	group2 Ch01, Ch02, Ch11, Ch12, Ah1, Ah2, gh;
+	group2 Cbh0, Cbhi;
 	
 	integer kb01, kb02, kbi1, kbi2;
 	
@@ -172,10 +172,10 @@ KPW15_sign(list pk, list sk, group0 mui){
 	(g, gh, Ch01, Ch02, Ch11, Ch12, Cbh0, Cbhi, Ah1, Ah2)=pk;
 
 	integer r, tau;
-	group0 sig11, sig12, sig21, sig22, sig31, sig32;
-	group1 Tah;
+	group1 sig11, sig12, sig21, sig22, sig31, sig32;
+	group2 Tah;
 
-	group0 Mbi1, Mbi2;
+	group1 Mbi1, Mbi2;
 
 	Mbi1=1;
 	Mbi2=1;
@@ -192,7 +192,7 @@ KPW15_sign(list pk, list sk, group0 mui){
 	r=rnd();
 	tau=rnd();
 
-	group0 KB01;
+	group1 KB01;
 	KB01=g^(kbi1);
 
 	sig11=(g^(kb01))*Mbi1*(P01^r)*(P11^(r*tau));
@@ -214,14 +214,14 @@ KPW15_sign(list pk, list sk, group0 mui){
 }
 
 
-KPW15_verify(list pk, group0 mui, list sigma){
+KPW15_verify(list pk, group1 mui, list sigma){
 
-	group0 P01, P02, P11, P12, B1, B2, g;
-	group1 Ch01, Ch02, Ch11, Ch12, Ah1, Ah2, gh;
-	group1 Cbh0, Cbhi;
+	group1 P01, P02, P11, P12, B1, B2, g;
+	group2 Ch01, Ch02, Ch11, Ch12, Ah1, Ah2, gh;
+	group2 Cbh0, Cbhi;
 
-	group0 sig11, sig12, sig21, sig22, sig31, sig32;
-	group1 Tah;
+	group1 sig11, sig12, sig21, sig22, sig31, sig32;
+	group2 Tah;
 
 	(sig11, sig12, sig21, sig22, sig31, sig32, Tah)=sigma;
 	(g, gh, Ch01, Ch02, Ch11, Ch12, Cbh0, Cbhi, Ah1, Ah2)=pk;

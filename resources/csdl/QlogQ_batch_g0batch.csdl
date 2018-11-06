@@ -35,29 +35,29 @@ integer Sep;   // security parameter specified in PerfDB
 integer Order;   // group order (=q)
 integer batch_quality;
 
-group0 G;     // default generator for the left group
-group1 Gh;     // default generator for the right group
+group1 G;     // default generator for the left group
+group2 Gh;     // default generator for the right group
 target Gt;     // default generator for the target group Gt = e(G, Gh);
 
 integer rnd(){
 }
 
-group0 rnd_g(){
+group1 rnd_g(){
   integer r;
   return G^r;
 }
 
-group1 rnd_gh(){
+group2 rnd_gh(){
   integer r;
   return Gh^r;
 }
 
 // dummy functions for x^(-1)
-group0 inv0(group0 x){
+group1 inv0(group1 x){
   return x;
 }
 
-group1 inv1(group1 x){
+group2 inv1(group2 x){
   return x;
 }
 
@@ -69,8 +69,8 @@ group1 inv1(group1 x){
 
 // pargen
 list QANIZK_pargen(){
-	group0 g;
-	group1 gh;
+	group1 g;
+	group2 gh;
 	g=rnd_g();
 	gh=rnd_gh();
 	
@@ -79,7 +79,7 @@ list QANIZK_pargen(){
 
 
 // crsgen_v
-list QANIZK_crsgen_v(group0 g, group1 gh){
+list QANIZK_crsgen_v(group1 g, group2 gh){
 	integer i, qki, qk0;
 
 	for(i=0; i<10; i++){
@@ -91,7 +91,7 @@ list QANIZK_crsgen_v(group0 g, group1 gh){
 	qa1 = rnd();
 	qa2 = rnd();
 
-	group1 QCh0i, QCh1, QAh;
+	group2 QCh0i, QCh1, QAh;
 
 	for(i=0; i<10; i++){
 		QCh0i = gh^(qki*qa1);
@@ -109,10 +109,10 @@ list QANIZK_crsgen_v(group0 g, group1 gh){
 
 
 // crsgen_p
-list QANIZK_crsgen_p(group0 g, group1 gh, group0 Mij, group0 qai, list st, list CRS_v){
+list QANIZK_crsgen_p(group1 g, group2 gh, group1 Mij, group1 qai, list st, list CRS_v){
 	integer i, j, qki, qk0;
-	group0 QP0j, QP1;
-	group1 QCh0i, QCh1, QAh;
+	group1 QP0j, QP1;
+	group2 QCh0i, QCh1, QAh;
 
 	(g, gh, QCh0i, QCh1, QAh)=CRS_v;
 	(qki, qk0)=st;
@@ -134,8 +134,8 @@ list QANIZK_crsgen_p(group0 g, group1 gh, group0 Mij, group0 qai, list st, list 
 }
 
 // prover
-list QANIZK_prove(group0 Yi, integer xj, list CRS_p){
-	group0 pi, QP0j, QP1;
+list QANIZK_prove(group1 Yi, integer xj, list CRS_p){
+	group1 pi, QP0j, QP1;
 	
 	(QP0j, QP1)=CRS_p;
 	
@@ -150,9 +150,9 @@ list QANIZK_prove(group0 Yi, integer xj, list CRS_p){
 }
 
 // ver
-list QANIZK_verify(group0 Yi, group0 pi, list CRS_v){
-	group0 g;
-	group1 gh, QCh0i, QCh1, QAh;
+list QANIZK_verify(group1 Yi, group1 pi, list CRS_v){
+	group1 g;
+	group2 gh, QCh0i, QCh1, QAh;
 
 	(g, gh, QCh0i, QCh1, QAh)=CRS_v;
 
@@ -169,7 +169,7 @@ return 1;
 // Simulation
 //
 // crssim_v
-list QANIZK_crssim_v(group0 g, group1 gh){
+list QANIZK_crssim_v(group1 g, group2 gh){
 	integer i, qki, qk0;
 
 // In fact, the number of loop is 
@@ -183,8 +183,8 @@ list QANIZK_crssim_v(group0 g, group1 gh){
 	qa1 = rnd();
 	qa2 = rnd();
 
-	group1 QCh0i, QCh1, QAh;
-	group0 QK0;
+	group2 QCh0i, QCh1, QAh;
+	group1 QK0;
 
 	QK0=g^(qk0);
 
@@ -207,9 +207,9 @@ list QANIZK_crssim_v(group0 g, group1 gh){
 }
 
 
-list QANIZK_sim(group0 g, group1 gh, group0 Yi, list trap){
+list QANIZK_sim(group1 g, group2 gh, group1 Yi, list trap){
 	integer qki;
-	group0 pi, QK0;
+	group1 pi, QK0;
 
 	(qki, QK0)=trap;
 	
@@ -230,8 +230,8 @@ list QANIZK_sim(group0 g, group1 gh, group0 Yi, list trap){
 // Scheme 
 
 QlogQ_gen(){
-	group0 g;
-	group1 gh;
+	group1 g;
+	group2 gh;
 	
 	g=rnd_g();
 	gh=rnd_gh();
@@ -247,7 +247,7 @@ QlogQ_gen(){
 		ki=rnd();
 		}
 	
-	group0 etai, rho, brho, pshi, gam;
+	group1 etai, rho, brho, pshi, gam;
 	integer mi, r, rd;
 		
 		r=rnd();
@@ -283,42 +283,42 @@ QlogQ_gen(){
 }
 
 
-QlogQ_sign(list pk, list sk, group0 mui){
+QlogQ_sign(list pk, list sk, group1 mui){
 	integer b, k0, ki, d, e;
 	list trap, CRS_v;
 	(b, k0, ki, d, e, trap)=sk;
 	CRS_v=pk;
 
-	group0 g;
-	group1 gh, QCh0i, QCh1, QAh;
+	group1 g;
+	group2 gh, QCh0i, QCh1, QAh;
 	(g, gh, QCh0i, QCh1, QAh)=CRS_v;
 
 	integer qki;
-	group0 QK0;
+	group1 QK0;
 	(qki, QK0)=trap;
 	
 	integer r, TAG;
 	r=rnd();
 	TAG=rnd();
 	
-	group0 rho, brho, psi, gam;
+	group1 rho, brho, psi, gam;
 	rho=g^r;
 	brho=g^(b*r);
 	psi=g^(TAG*r);
 	
-//	group0 Ki;
+//	group1 Ki;
 //	for(i=0; i<10; i++){
 //		Ki=g^(ki);	
 //	}	
 	
-	group0 Kmu;
+	group1 Kmu;
 	for(i=0; i<10; i++){
 		Kmu= Kmu * (mui^(ki));		
 		}
 	gam=Kmu * (g^(k0 + (d*r) + TAG * (e*r)));
 	
-	group0 pi;
-	group1 tau;
+	group1 pi;
+	group2 tau;
 	
 	// In fact, the candidates of witnesses
 	// are (mui, rho, brho, psi, gam)
@@ -332,9 +332,9 @@ QlogQ_sign(list pk, list sk, group0 mui){
 	
 }
 
-QlogQ_verify(list pk, group0 mui, list sigma){
-	group0 rho, brho, psi, gam, pi, yi;
-	group1 tau;
+QlogQ_verify(list pk, group1 mui, list sigma){
+	group1 rho, brho, psi, gam, pi, yi;
+	group2 tau;
 	list CRS_v;
 	integer retv;
 	target ev;
@@ -342,8 +342,8 @@ QlogQ_verify(list pk, group0 mui, list sigma){
 	(rho, brho, psi, gam, tau, pi)=sigma;
 	CRS_v=pk;
 	
-	group1 gh, QCh0i, QCh1, QAh;
-	group0 g;
+	group2 gh, QCh0i, QCh1, QAh;
+	group1 g;
 	(g, gh, QCh0i, QCh1, QAh)=CRS_v;
 	
 //	a=QANIZK_verify(mui, pi, CRS_v);

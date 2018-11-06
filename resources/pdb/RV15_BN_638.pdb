@@ -54,16 +54,16 @@ eFMu           = eFM-eFR;
 eFSu	       = eFS-eFR;
 
 \\ Group Operations
-\\GROUP0_mul     = FI + 2*FM + FS;   \\ Affine
-\\GROUP0_square  = FI + 2*FM + 2*FS; \\ Affine
-GROUP0_mul      = 9*FM + 2*FS; \\ (Polar cordinate Z=1)
-GROUP0_square   = 7*FM + 5*FS; \\ (Polar cordinate a=\=-3)
+\\GROUP1_mul     = FI + 2*FM + FS;   \\ Affine
+\\GROUP1_square  = FI + 2*FM + 2*FS; \\ Affine
+GROUP1_mul      = 9*FM + 2*FS; \\ (Polar cordinate Z=1)
+GROUP1_square   = 7*FM + 5*FS; \\ (Polar cordinate a=\=-3)
 
 
-\\GROUP1_mul     = eFI + 3*eFM + 1*eFS + 6*eFA + 2*FM;  \\ Affine
-\\GROUP1_square  = eFI + 3*eFM + 2*eFS + 7*eFA + 2*FM;  \\ Affine
-GROUP1_mul     = 11*eFM + 2*eFSu + 10*eFA + 4*FM;  \\ Projective
-GROUP1_square  =  2*eFMu + 7*eFSu + 8*eFR + 25*eFA + 4*FM;  \\ Projective
+\\GROUP2_mul     = eFI + 3*eFM + 1*eFS + 6*eFA + 2*FM;  \\ Affine
+\\GROUP2_square  = eFI + 3*eFM + 2*eFS + 7*eFA + 2*FM;  \\ Affine
+GROUP2_mul     = 11*eFM + 2*eFSu + 10*eFA + 4*FM;  \\ Projective
+GROUP2_square  =  2*eFMu + 7*eFSu + 8*eFR + 25*eFA + 4*FM;  \\ Projective
 
 TARGET_mul     = 18*eFMu + 110*eFA + 6*eFR;
 TARGET_square  = 9*eFSu+46*eFA+6*eFR;
@@ -78,6 +78,6 @@ Final_Exponentiation = 24000 * 1000;
 \\eFI   = FI+2*FMu+2*FSu+3*FR+3*FA;
 
 \\ wNAF window width (opt by hand)
-GROUP0_wNAF          = 5;
 GROUP1_wNAF          = 5;
+GROUP2_wNAF          = 5;
 TARGET_wNAF          = 5;
