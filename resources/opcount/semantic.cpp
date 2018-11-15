@@ -697,7 +697,7 @@ static reduced * process_UNARY(
   cell * arg0 = L->element(2) ;
   reduced * left  = process_all(arg0) ;
   if(left){
-    left->transfer_batch() ;
+    // left->transfer_batch() ;
     return left ;
   }else{
     return operation_NEW(TYPE_NULL, formula(), 0) ;
@@ -2078,7 +2078,7 @@ static reduced * process_EXP_LIST(cell * L) {
   reduced * R = NULL ;
   if(single){
     R = process_all((cell*)arg->car) ;
-    if(R)R->transfer_batch() ;
+    // if(R)R->transfer_batch() ;
   }else{
     formula total ;
     int     left  = 1 ;
