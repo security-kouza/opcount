@@ -46,7 +46,7 @@ Final_Exponentiation = 5706*FM+4*FI;
 
 \\ wNAF window size
 \\ Set 0 for searching optimal window size adaptively for every modexp
-GROUP0_wNAF          = 0;
 GROUP1_wNAF          = 0;
+GROUP2_wNAF          = 0;
 TARGET_wNAF          = 0;
 
