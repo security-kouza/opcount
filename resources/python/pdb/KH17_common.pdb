@@ -1,0 +1,73 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\ KH17_common.pdb Rev.1.0 2017/12/18
+\\ Common arithmetics that are not experimentally measured in Kiyo17_xxx.pdb and KH17_xxx.pdb.
+\\ Usage: opcount Kiyo17_xxx.pdb KH_common.pdb < yyy.csdl | gp -q
+\\        or
+\\        opcount KH17_xxx.pdb KH_common.pdb < yyy.csdl | gp -q
+\\
+\\ Updated(1.0) paring_batch to internally count TARGET_mul
+
+
+\\ Pari/gp setting
+default(realprecision,16) ;
+default(format, "g.5") ;
+
+\\ Built-in functions
+call_rnd             = 0;
+call_prod(n,x)       = n * x;
+
+\\
+\\ GROUP1 arithmetics
+\\
+
+GROUP1_bitexp(k,n,m) =(k / Order) * GROUP1_pow * n + GROUP1_mul * (max(0,n-1) + m);
+GROUP1_batch(n,m) = GROUP1_pow * n + GROUP1_mul * (max(0,n-1) + m);
+
+
+\\
+\\ GROUP2 arithmetics
+\\
+GROUP2_bitexp(k,n,m) = (k / Order) * GROUP2_pow * n + GROUP2_mul * (max(0,n-1) + m);
+GROUP2_batch(n,m) = GROUP2_pow * n + GROUP2_mul * (max(0,n-1) + m);
+
+
+\\
+\\ TARGET group arithmetics
+\\
+TARGET_bitexp(k,n,m) = (k / Order) * TARGET_pow * n + TARGET_mul * (max(0,n-1) + m);
+TARGET_batch(n,m) = TARGET_pow * n + TARGET_mul * (max(0,n-1) + m);
+
+\\ Division
+TARGET_div = TARGET_inv + TARGET_mul;
+
+
+\\
+\\ Computing product of n pairings
+\\
+pairing_batch(n)     = n * Miller_Loop + min(n,1) * Final_Exponentiation + (n-1) * TARGET_mul;
+
+
+\\
+\\ MISC operations
+\\
+GROUP1_assign        = 0 ;
+GROUP2_assign        = 0 ;
+INTEGER_assign       = 0 ;
+LIST_VARIABLE_assign = 0 ;
+LIST_LITERAL_assign  = 0 ;
+INTEGER_mul          = 0 ;
+TARGET_eq            = 0 ;
+INTEGER_uminus       = 0 ;
+INTEGER_sub          = 0 ;
+INTEGER_add          = 0 ;
+INTEGER_eq	     = 0 ;
+INTEGER_logical_and  = 0 ;
+TARGET_assign	     = 0 ;
+GROUP_assign         = 0 ;
+

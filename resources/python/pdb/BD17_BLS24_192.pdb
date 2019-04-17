@@ -1,0 +1,51 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\ BLS24 curve for 192bit security level 
+\\ Rev.0.1 2017/07/23
+\\ Source: ePrint 2017/334 version 20170426:174451"
+\\         "Updating key size estimations for pairings"
+\\          by Razvan Barbulescu and Sylvain Duquesne
+\\ Base field size = 559 bits
+\\ Estimated Security Level = 203.72 bits
+\\ Group order = 449 bits
+\\ u = -2^56 - 2^43 +2^9 - 2^6
+\\ Status = [x]Theoretical Estimation, []Real Benchmark, []Toy Example
+
+\\ For BD17_xxx.pdb, the unit of timing is 32 x 32bit multiplications.
+Unit = 1;
+
+
+\\ Common Parameters
+Sep                  = 192;
+Order                = 449;  \\ Group order in bits = size of an Zp element
+EmbDeg               = 24;   \\ Embedding degree
+ExtDeg		     = 4;    \\ Extension Degree for Group1
+
+
+\\ Field Arithmetic
+FM                   = 324 * Unit;  \\ Multiplication in F_q = (15 words)^2
+FI                   = 6*FM; \\ Inversion in F_q (heuristic: not from the paper)
+eFM		     = 3*3*FM;
+eFS		     = 2*3*FM;
+eFI		     = 2*3*FM + 2*2*FM + 4*FM+FI;  \\ from [AFKMR12, Sec.7]
+TARGET_mul           = 54*3*FM;
+TARGET_square        = 36*3*FM;
+TARGET_inv           = 97*FM+FI;    \\ According to Table12 of [BD17]. But it must be 95*FM+FI if we correctly compute from [AFKMR12]. Where does extra 2*FM come from? 
+
+
+\\ High-level Functionalities
+Miller_Loop          = 17127*FM;
+Final_Exponentiation = 25187*FM+10*FI;
+
+
+\\ wNAF window size
+\\ Set 0 for searching optimal window size adaptively for every modexp
+GROUP1_wNAF          = 0;
+GROUP2_wNAF          = 0;
+TARGET_wNAF          = 0;
+

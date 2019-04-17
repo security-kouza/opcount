@@ -1,0 +1,89 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\ Rev.1.0 2017/12/18
+\\ Common arithmetics that are not experimentally measured in RV15_xxx.pdb.
+\\
+\\ Updated(1.0): paring_batch to internally count TARGET_mul
+
+\\ Pari/gp setting
+default(realprecision,16) ;
+default(format, "g.5") ;
+
+
+\\ Built-in functions
+call_rnd             = 0 ;
+call_prod(n,x)       = n * x;
+
+
+\\ Multi-base exponentiation for k-bit exponents by wNAF with whole or block or no table lookup.
+Bitexp_wNAF(w,k,n,m,time_mul,time_square,time_div) = {
+    local(cost_tbl_sqr, cost_tbl_mul, cost_ave_mul, slop, ttl);
+    if(w>k, w=k);
+    if(w<=2,
+       cost_tbl_sqr = 0;
+       cost_tbl_mul = 0;
+       ,
+       cost_tbl_sqr = 1;
+       cost_tbl_mul = 2^(w-2)-1;
+       );
+    cost_ave_mul = k  / (w+1);  \\ average number of non-zero bits in each k-bit exponent
+    slop = 0.5;  \\ assumption: wNAF causes a sloppy bit with probability 1/2
+    
+    ttl = n * (
+	       cost_tbl_sqr * time_square   \\ table making
+	       + cost_tbl_mul * time_mul      \\ table making
+	       + cost_ave_mul * time_mul)     \\ multiplication for each non-zero bit
+    + min(1,n) * (k + slop) * time_square \\ squaring k+slop bits
+    + m * time_mul;
+    
+    return (ttl);
+};
+
+	
+\\ Multi-base exponentiation by 2-GLV method for each exponentiation
+GROUP1_bitexp(k,n,m) = Bitexp_wNAF(GROUP1_wNAF,k,n,m,GROUP1_mul,GROUP1_square,GROUP1_mul);
+GROUP1_GLV2(n,m) = Bitexp_wNAF(GROUP1_wNAF,(Order/2),2*n,m,GROUP1_mul,GROUP1_square,GROUP1_mul);
+GROUP1_batch(n,m) = GROUP1_GLV2(n,m);
+
+
+\\ Multi-base exponentiation for k-bit exponents by the binary method with or without table look-ups
+GLS_deg = eulerphi(EmbDeg);
+
+\\ Computing multi-base exponentiation in group1 with x-GLS method
+GROUP2_bitexp(k,n,m) = Bitexp_wNAF(GROUP2_wNAF,k,n,m,GROUP2_mul,GROUP2_square,GROUP2_mul);
+GROUP2_GLSX(x,n,m) = Bitexp_wNAF(GROUP2_wNAF,ceil(Order/x), x*n, m, GROUP2_mul,GROUP2_square,GROUP2_mul);
+GROUP2_batch(n,m) = GROUP2_GLSX(GLS_deg,n,m);
+
+
+\\
+\\ Computing multi-base exponentiation in G_t with x-GLS method
+\\
+TARGET_bitexp(k,n,m) = Bitexp_wNAF(TARGET_wNAF,k,n,m,TARGET_mul,TARGET_square,TARGET_mul);
+TARGET_GLSX(x,n,m) = Bitexp_wNAF(TARGET_wNAF,ceil(Order/x), x*n, m, TARGET_mul,TARGET_square,TARGET_inv);
+TARGET_batch(n,m) = TARGET_GLSX(GLS_deg,n,m);
+
+
+\\ Computing product of n pairings
+pairing_batch(n)     = n * Miller_Loop + min(n,1) * Final_Exponentiation + (n-1) * TARGET_mul;
+
+
+\\ MISC operations
+GROUP1_assign        = 0 ;
+GROUP2_assign        = 0 ;
+INTEGER_assign       = 0 ;
+LIST_VARIABLE_assign = 0 ;
+LIST_LITERAL_assign  = 0 ;
+INTEGER_mul          = 0 ;
+TARGET_eq            = 0 ;
+INTEGER_eq	     = 0 ;
+INTEGER_uminus       = 0 ;
+INTEGER_sub          = 0 ;
+INTEGER_add          = 0 ;
+INTEGER_logical_and  = 0 ;
+TARGET_assign	     = 0 ;
+GROUP_assign         = 0 ;

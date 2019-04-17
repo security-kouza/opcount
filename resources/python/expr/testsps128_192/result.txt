@@ -1,0 +1,33 @@
+## Results of estimating performance of some SPS schemes over DB17 timing data.
+##
+## Copyright (c) 2019 NTT corp. - All Rights Reserved
+##
+##  This file is part of Opcount project which is released under Software
+##  License Agreement for Evaluation. See file LICENSE.pdf for full license
+##  details.
+##
+
+Estimating performance of some SPSes over DB17
+with batch_quality=128 for all.
+
+TightSPS (naiive) at 128bit level
+
+Evaluating  on BN_128.
+tSPSGen     = 33.65655750
+tSPSSign    = 27.02664000
+tSPSVerify = 207.3748500
+
+Evaluating  on BLS12_128.
+tSPSGen     = 23.27053500
+tSPSSign    = 18.81972000
+tSPSVerify = 141.7986000
+
+Evaluating  on KSS16_128.
+tSPSGen     = 18.10129750
+tSPSSign    = 14.84452200
+tSPSVerify = 97.11145400
+
+Evaluating  on KSS18_128.
+tSPSGen     = 15.51986333
+tSPSSign    = 12.57553000
+tSPSVerify = 111.9106010

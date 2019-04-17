@@ -1,0 +1,48 @@
+\\
+\\ Copyright (c) 2017 NTT corp. - All Rights Reserved
+\\
+\\  This file is part of Opcount project which is released under Software
+\\  License Agreement for Evaluation. See file LICENSE.pdf for full license
+\\  details.
+\\
+\\ BLS12 curve for 128bit security level 
+\\ Rev.0.1 2017/05/19
+\\ Source: ePrint 2017/334 version 20170426:174451"
+\\         "Updating key size estimations for pairings"
+\\          by Razvan Barbulescu and Sylvain Duquesne
+\\ Base field size = 461 bits
+\\ Estimated Security Level = 131.8 bits
+\\ Group order = 308 bits
+\\ u = -2^77 - 2^59 + 2^9
+\\ Status = [x]Theoretical Estimation, []Real Benchmark, []Toy Example
+
+\\ For BD17_xxx.pdb, the unit of timing is 32 x 32bit multiplications.
+Unit = 1;
+
+
+\\ Common Parameters
+Sep                  = 128;
+Order                = 308;  \\ Group order in bits = size of an Zp element
+EmbDeg               = 12;   \\ Embedding degree
+ExtDeg		     = 2;    \\ Extension Degree for Group1
+
+\\ Field Arithmetics
+FM                   = 225 * Unit;  \\ Multiplication in F_q = (15 words)^2
+FI                   = 6*FM; 	    \\ Inversion in F_q (heuristic: not from the paper)
+eFM                  = 3*FM;	    \\ Multiplication in F_q^2
+eFS                  = 2*FM;
+eFI                  = 4*FM+FI;	    \\ taken from [AFCK+13]
+TARGET_mul           = 54*FM;       \\ Multiplication in F_q^12
+TARGET_square        = 36*FM;
+TARGET_inv           = 97*FM+FI;
+
+\\ High-level Functionalities
+Miller_Loop          = 7708*FM;
+Final_Exponentiation = 6320*FM+6*FI;
+
+\\ wNAF window size
+\\ Set 0 for searching optimal window size adaptively for every modexp
+GROUP1_wNAF          = 0;
+GROUP2_wNAF          = 0;
+TARGET_wNAF          = 0;
+

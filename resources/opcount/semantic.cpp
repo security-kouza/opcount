@@ -264,7 +264,7 @@ reduced * operation_MUL(reduced * X, reduced * Y, cell * L){
         (Y->type == TYPE_GROUP2) ||
         (Y->type == TYPE_DUPLEX) ||
         (Y->type == TYPE_PROHIBITED)||
-        (X->type == TYPE_TARGET)
+        (Y->type == TYPE_TARGET)
     ) return Y ;
   }
 
