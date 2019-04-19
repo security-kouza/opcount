@@ -182,10 +182,10 @@ by User without NTT's prior written consent.
 	./expr/testsps128_192/tightSPS17.gp
 	./LICENSE.md
 	./LICENSE.pdf
-	./LICENSE.sh
 	./opcount/ast2str.py
 	./opcount/opcount.py
 	./opcount/README.jp.pdf
+	./opcount/README.pdf
 	./pdb/BD17_BLS12_128.pdb
 	./pdb/BD17_BLS24_192.pdb
 	./pdb/BD17_BN_128.pdb
@@ -215,4 +215,5 @@ by User without NTT's prior written consent.
 	./sample/elgamal.sage.py
 	./sample/hello_world.sage
 	./sample/hello_world.sage.py
+	./sample/preamble
 ```
