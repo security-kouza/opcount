@@ -1,0 +1,13 @@
+GROUP_batch(n,b)     = n * GROUP_pow   + (n-1+b) * GROUP_mul   ;
+GROUP0_batch(n,b)    = n * GROUP0_pow  + (n-1+b) * GROUP0_mul  ;
+GROUP1_batch(n,b)    = n * GROUP1_pow  + (n-1+b) * GROUP1_mul  ;
+TARGET_batch(n,b)    = n * TARGET_pow  + (n-1+b) * TARGET_mul  ;
+pairing_batch(n)     = n * Miller_Loop + (n-1)   * TARGET_mul + Final_Exponentiation ;
+
+LIST_VARIABLE_assign = 0 ;
+LIST_LITERAL_assign  = 0 ;
+GROUP_assign         = 0 ;
+GROUP0_assign        = 0 ;
+GROUP1_assign        = 0 ;
+TARGET_assign        = 0 ;
+INTEGER_assign       = 0 ;

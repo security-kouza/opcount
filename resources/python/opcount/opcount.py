@@ -741,6 +741,9 @@ class NodeViewer(NodeEditor):
 # ==================================================================
 # OpCount
 # ==================================================================
+
+function_stack = []
+
 class OpCount(NodeEditor):
     def generic_visit(self, node):
         total = 0
@@ -1194,6 +1197,7 @@ class OpCount(NodeEditor):
         return Reduced(type_, node, total=total, batch=batch)
 
     def visit_FunctionDef(self, node):
+        global function_stack
         symbol = node.name
         args = self.visit(node.args)
         body = self.visit(node.body)
@@ -1202,6 +1206,7 @@ class OpCount(NodeEditor):
         if (symbol[0] != '_') and \
            (symbol != 'e'):
             print("call_" + symbol + " = " + str(total).replace(';',',') + ';')
+            function_stack.append(symbol)
         return Reduced('TYPE_FUNCTIONDEF', node, total=0, batch=0)
 
     def visit_If(self, node):
@@ -1269,9 +1274,13 @@ class OpCount(NodeEditor):
 def main():
     n = len(sys.argv)
     i = 0
+    Print = False
     for i in range(1,n):
         filename = sys.argv[i]
         if filename == '-t': break
+        if filename == '-p':
+            Print = True
+            continue
         f = open(filename, 'rb')
         print(f.read())
         f.close()
@@ -1290,10 +1299,16 @@ def main():
 
     for j in range(i+1,n):
         filename = sys.argv[j]
-        if filename == '-t': break
+        if filename == '-p':
+            Print = True
+            continue
         f = open(filename, 'rb')
         print(f.read())
         f.close()
+
+    if Print:
+        for f in function_stack:
+            print('print("' + f + ' = ", eval(call_' + f + '));')
 
 if __name__ == "__main__":
     main()
